@@ -523,7 +523,7 @@ const FlavorWorlds = ({ setPage, onSelect }) => {
               onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.transform = "none"; }}>
               <div style={{ height: 240, position: "relative", overflow: "hidden", background: `radial-gradient(ellipse at center, ${w.color1}22 0%, var(--bg-deep) 70%)` }}>
                 <div style={{ position: "absolute", inset: 0, background: `linear-gradient(180deg, transparent 50%, var(--bg-card) 100%)`, zIndex: 1 }} />
-                <ProductVisual product={w.product} size={200} />
+                <ProductVisual product={w.product} size={200} style={w.key === "volcanic" ? { transform: "translateY(20px)" } : {}} />
               </div>
               <div style={{ padding: "20px 24px 24px", position: "relative" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
