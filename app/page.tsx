@@ -180,8 +180,8 @@ const ProductVisual = ({ product, size = 200, style = {} }) => {
   const [imgError, setImgError] = useState(false);
   const src = product.images[0];
   const needsCrop = product.flavor === "plasma" || product.flavor === "lunar" || product.flavor === "volcanic";
-  const cropPos = product.flavor === "volcanic" ? "center" : "top left";
-  const cropTransform = product.flavor === "volcanic" ? "scale(1.12)" : "scale(1.08) translate(-2%, -2%)";
+  const cropPos = product.flavor === "volcanic" ? "25% center" : "top left";
+  const cropTransform = product.flavor === "volcanic" ? "scale(1.5) translate(10%, 0)" : "scale(1.08) translate(-2%, -2%)";
   if (!imgError) {
     return (
       <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: needsCrop ? 8 : 16, ...style }}>
