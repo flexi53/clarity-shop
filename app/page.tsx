@@ -268,13 +268,13 @@ const Header = ({ page, setPage, cartItems, cartOpen, setCartOpen, wishlist }) =
           ))}
         </nav>
 
-        {/* Inline Search */}
+        {/* Inline Search — absolute so it doesn't shift layout */}
         {searchOpen && (
-          <div style={{ flex: 1, maxWidth: 320, margin: "0 16px", position: "relative" }}>
+          <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", width: 320, zIndex: 10 }}>
             <Search size={14} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", pointerEvents: "none" }} />
             <input autoFocus placeholder="Sorten, Bundles, Angebote…"
               onBlur={() => setSearchOpen(false)}
-              style={{ width: "100%", background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 12, padding: "8px 14px 8px 36px", color: "var(--text-primary)", fontSize: 13, outline: "none" }} />
+              style={{ width: "100%", background: "rgba(15,16,30,0.95)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 12, padding: "8px 14px 8px 36px", color: "var(--text-primary)", fontSize: 13, outline: "none", backdropFilter: "blur(12px)" }} />
           </div>
         )}
 
