@@ -179,13 +179,14 @@ const Toast = ({ toasts, removeToast }) => (
 const ProductVisual = ({ product, size = 200, style = {} }) => {
   const [imgError, setImgError] = useState(false);
   const src = product.images[0];
-  const needsCrop = product.flavor === "plasma" || product.flavor === "lunar";
+  const needsCrop = product.flavor === "plasma" || product.flavor === "lunar" || product.flavor === "volcanic";
+  const cropPos = product.flavor === "volcanic" ? "right center" : "top left";
   if (!imgError) {
     return (
       <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: needsCrop ? 8 : 16, ...style }}>
         <div style={{ borderRadius: 16, border: `1px solid ${product.color1}33`, boxShadow: `0 0 24px ${product.glow}, 0 4px 16px rgba(0,0,0,0.4)`, overflow: "hidden", maxWidth: "100%", maxHeight: "100%", display: "flex" }}>
           <img src={src} alt={product.name} onError={() => setImgError(true)}
-            style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "cover", objectPosition: needsCrop ? "top left" : "center", transform: needsCrop ? "scale(1.08) translate(-2%, -2%)" : "none", display: "block" }} />
+            style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "cover", objectPosition: needsCrop ? cropPos : "center", transform: needsCrop ? "scale(1.08) translate(-2%, -2%)" : "none", display: "block" }} />
         </div>
       </div>
     );
@@ -268,19 +269,21 @@ const Header = ({ page, setPage, cartItems, cartOpen, setCartOpen, wishlist }) =
           ))}
         </nav>
 
-        {/* Inline Search — absolute so it doesn't shift layout */}
-        {searchOpen && (
-          <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", width: 320, zIndex: 10 }}>
-            <Search size={14} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", pointerEvents: "none" }} />
-            <input autoFocus placeholder="Sorten, Bundles, Angebote…"
-              onBlur={() => setSearchOpen(false)}
-              style={{ width: "100%", background: "rgba(15,16,30,0.95)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 12, padding: "8px 14px 8px 36px", color: "var(--text-primary)", fontSize: 13, outline: "none", backdropFilter: "blur(12px)" }} />
-          </div>
-        )}
-
         {/* Actions */}
         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <button onClick={() => setSearchOpen(!searchOpen)} aria-label="Suche" style={{ background: searchOpen ? "rgba(255,255,255,0.1)" : "none", border: "none", cursor: "pointer", padding: 10, borderRadius: 10, color: searchOpen ? "var(--text-primary)" : "var(--text-secondary)" }}><Search size={18} /></button>
+          {/* Search — fixed width slot so layout never shifts */}
+          <div style={{ width: searchOpen ? 220 : 38, transition: "width 0.25s ease", overflow: "hidden", position: "relative" }}>
+            {searchOpen ? (
+              <>
+                <Search size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", pointerEvents: "none", zIndex: 1 }} />
+                <input autoFocus placeholder="Sorten, Bundles…"
+                  onBlur={() => setSearchOpen(false)}
+                  style={{ width: "100%", background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 10, padding: "7px 12px 7px 32px", color: "var(--text-primary)", fontSize: 13, outline: "none" }} />
+              </>
+            ) : (
+              <button onClick={() => setSearchOpen(true)} aria-label="Suche" style={{ background: "none", border: "none", cursor: "pointer", padding: 10, borderRadius: 10, color: "var(--text-secondary)", width: 38, display: "flex", alignItems: "center", justifyContent: "center" }}><Search size={18} /></button>
+            )}
+          </div>
           <button onClick={() => setPage("wishlist")} aria-label="Wunschliste" style={{ background: "none", border: "none", cursor: "pointer", padding: 10, borderRadius: 10, color: "var(--text-secondary)", position: "relative" }}>
             <Heart size={18} />
             {wishlist.length > 0 && <span style={{ position: "absolute", top: 5, right: 5, width: 8, height: 8, borderRadius: "50%", background: "var(--volcanic-1)" }} />}
