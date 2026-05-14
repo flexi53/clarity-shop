@@ -179,9 +179,9 @@ const Toast = ({ toasts, removeToast }) => (
 const ProductVisual = ({ product, size = 200, style = {} }) => {
   const [imgError, setImgError] = useState(false);
   const src = product.images[0];
-  const needsCrop = product.flavor === "plasma" || product.flavor === "lunar" || product.flavor === "volcanic";
-  const cropPos = product.flavor === "volcanic" ? "70% center" : "top left";
-  const cropTransform = product.flavor === "volcanic" ? "scale(1.6) translate(-10%, 0)" : "scale(1.08) translate(-2%, -2%)";
+  const needsCrop = product.flavor === "plasma" || product.flavor === "lunar";
+  const cropPos = "top left";
+  const cropTransform = "scale(1.08) translate(-2%, -2%)";
   if (!imgError) {
     return (
       <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: needsCrop ? 8 : 16, ...style }}>
@@ -528,7 +528,7 @@ const FlavorWorlds = ({ setPage, onSelect }) => {
               onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.transform = "none"; }}>
               <div style={{ height: 240, position: "relative", overflow: "hidden", background: `radial-gradient(ellipse at center, ${w.color1}22 0%, var(--bg-deep) 70%)` }}>
                 <div style={{ position: "absolute", inset: 0, background: `linear-gradient(180deg, transparent 50%, var(--bg-card) 100%)`, zIndex: 1 }} />
-                <ProductVisual product={w.product} size={200} style={w.key === "volcanic" ? { transform: "translateY(20px)" } : {}} />
+                <ProductVisual product={w.product} size={200} />
               </div>
               <div style={{ padding: "20px 24px 24px", position: "relative" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
