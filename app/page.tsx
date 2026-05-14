@@ -325,7 +325,7 @@ const HeroSection = ({ setPage, addToCart }) => {
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 200, background: "linear-gradient(to top, var(--bg-deep), transparent)" }} />
 
       {/* Content */}
-      <div style={{ position: "relative", maxWidth: 1280, margin: "0 auto", padding: "120px 24px 80px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40, alignItems: "center", width: "100%" }}>
+      <div style={{ position: "relative", maxWidth: 1280, margin: "0 auto", padding: "160px 24px 80px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40, alignItems: "center", width: "100%" }}>
         {/* Text */}
         <div key={activeSlide} className="animate-fadeUp">
           <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-active)", borderRadius: 100, padding: "6px 14px", marginBottom: 24 }}>
@@ -1458,7 +1458,7 @@ export default function App() {
       <AnnouncementBar />
       <div style={{ paddingTop: 0 }}>
       <Header page={page} setPage={(p) => { setPage(p); window.scrollTo(0, 0); }} cartItems={cartItems} cartOpen={cartOpen} setCartOpen={setCartOpen} wishlist={wishlist} />
-      <main id="main-content">
+      <main id="main-content" style={{ paddingTop: page === "home" ? 0 : 132 }}>
         {renderPage()}
       </main>
       {!["checkout", "imprint", "privacy", "terms"].includes(page) && <Footer setPage={(p) => { setPage(p); window.scrollTo(0, 0); }} />}
