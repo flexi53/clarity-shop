@@ -157,8 +157,8 @@ const FAQS = [
 ];
 
 // ─── Utilities ─────────────────────────────────────────────────────────────
-const formatPrice = (p) => `€${p.toFixed(2).replace(".", ",")}`;
-const getFlavorLabel = (f) => ({ plasma: "Plasma", lunar: "Lunar", volcanic: "Volcanic", mix: "Mix" }[f] || f);
+const formatPrice = (p: number) => `€${p.toFixed(2).replace(".", ",")}`;
+const getFlavorLabel = (f: string) => ({ plasma: "Plasma", lunar: "Lunar", volcanic: "Volcanic", mix: "Mix" }[f] || f);
 
 // ─── Toast ─────────────────────────────────────────────────────────────────
 const Toast = ({ toasts, removeToast }) => (
