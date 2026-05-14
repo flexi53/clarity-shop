@@ -70,7 +70,7 @@ const PRODUCTS = [
     shortDesc: "Intense mental clarity with a surge of electric energy. Purple. Sharp. Limitless.",
     longDesc: "Clarity Plasma is engineered for those who refuse to operate below full capacity. A precisely calibrated blend of nootropics and natural stimulants delivers razor-sharp focus and sustained energy without the crash. Feel the electric pull of pure cognitive performance.",
     price: 3.49, comparePrice: 4.49, flavor: "plasma", category: "single", badge: "BESTSELLER",
-    images: ["/products/plasma.jpg", "/products/plasma-2.jpg", "/products/plasma-detail.jpg"],
+    images: ["/images/plasma.jpg", "/images/plasma_icon.png"],
     features: ["200mg Natural Caffeine", "L-Theanine Complex", "B-Vitamin Matrix", "0g Sugar", "160 kcal"],
     color1: "#c855ff", color2: "#ff40a8", glow: "rgba(200,85,255,0.3)",
     rating: 4.8, reviewCount: 2341, sku: "CL-PL-001", stock: "in_stock",
@@ -82,7 +82,7 @@ const PRODUCTS = [
     shortDesc: "Cool, calm, razor-focused. Lunar is your orbit — steady, far-reaching, precise.",
     longDesc: "Clarity Lunar taps into the quiet intensity of deep space. Crafted for sustained performance and mental endurance, Lunar delivers clean energy with a cool, crystalline finish. For thinkers who go the distance.",
     price: 3.49, comparePrice: null, flavor: "lunar", category: "single", badge: "NEW",
-    images: ["/products/lunar.jpg", "/products/lunar-2.jpg", "/products/lunar-detail.jpg"],
+    images: ["/images/lunar.jpg", "/images/lunar_icon.png"],
     features: ["180mg Natural Caffeine", "Ashwagandha Extract", "Electrolyte Blend", "0g Sugar", "10 kcal"],
     color1: "#00d4ff", color2: "#7ba5ff", glow: "rgba(0,212,255,0.25)",
     rating: 4.7, reviewCount: 1887, sku: "CL-LN-001", stock: "in_stock",
@@ -94,7 +94,7 @@ const PRODUCTS = [
     shortDesc: "Raw. Primal. Unstoppable. Volcanic energy for when you need to go all out.",
     longDesc: "Clarity Volcanic channels the raw force beneath the surface. Maximum-intensity energy and heat-fueled performance for your hardest sessions and most demanding days. This is power without compromise.",
     price: 3.49, comparePrice: 4.49, flavor: "volcanic", category: "single", badge: "LIMITED",
-    images: ["/products/volcanic.jpg", "/products/volcanic-2.jpg", "/products/volcanic-detail.jpg"],
+    images: ["/images/volcanic.png", "/images/volcanic_icon.png"],
     features: ["220mg Natural Caffeine", "Beta-Alanine", "Creatine HCL", "0g Sugar", "20 kcal"],
     color1: "#ff5500", color2: "#ffaa00", glow: "rgba(255,85,0,0.3)",
     rating: 4.9, reviewCount: 3102, sku: "CL-VC-001", stock: "in_stock",
@@ -106,7 +106,7 @@ const PRODUCTS = [
     shortDesc: "One of each. The complete Clarity experience — Plasma, Lunar & Volcanic.",
     longDesc: "Can't choose? Don't. The Clarity Mix Pack gives you one of each flavor — Plasma, Lunar, and Volcanic — to find your perfect formula. Or rotate all three. Your clarity, your call.",
     price: 9.99, comparePrice: 10.47, flavor: "mix", category: "bundle", badge: "SAVE 5%",
-    images: ["/products/mix-pack.jpg", "/products/all-flavors.jpg"],
+    images: ["/images/allesorten.png"],
     features: ["1× Plasma", "1× Lunar", "1× Volcanic", "Free Shipping"],
     color1: "#7b5cff", color2: "#c855ff", glow: "rgba(123,92,255,0.3)",
     rating: 4.8, reviewCount: 987, sku: "CL-MX-003", stock: "in_stock",
@@ -118,7 +118,7 @@ const PRODUCTS = [
     shortDesc: "Six cans of pure electric focus. Stock up and stay sharp all week.",
     longDesc: null,
     price: 18.99, comparePrice: 20.94, flavor: "plasma", category: "multipack", badge: "10% OFF",
-    images: ["/products/plasma-6pack.jpg", "/products/plasma.jpg"],
+    images: ["/images/plasma.jpg", "/images/plasma_icon.png"],
     features: ["6× Clarity Plasma", "Free Shipping", "Bulk Discount"],
     color1: "#c855ff", color2: "#ff40a8", glow: "rgba(200,85,255,0.3)",
     rating: 4.8, reviewCount: 654, sku: "CL-PL-006", stock: "in_stock",
@@ -130,7 +130,7 @@ const PRODUCTS = [
     shortDesc: "The perfect introduction. 6 cans — 2 of each flavor — plus a Clarity shaker.",
     longDesc: "New to Clarity? Start right. Six cans spanning all three formulas, so you can sample every world and find your frequency. Includes an exclusive matte-black Clarity shaker bottle.",
     price: 24.99, comparePrice: 32.99, flavor: "mix", category: "bundle", badge: "BEST VALUE",
-    images: ["/campaigns/starter-bundle.jpg", "/products/all-flavors.jpg"],
+    images: ["/images/allesorten.png"],
     features: ["2× Plasma", "2× Lunar", "2× Volcanic", "Clarity Shaker Bottle", "Free Shipping"],
     color1: "#7b5cff", color2: "#00d4ff", glow: "rgba(123,92,255,0.35)",
     rating: 4.9, reviewCount: 2108, sku: "CL-ST-001", stock: "in_stock",
@@ -222,7 +222,7 @@ const Header = ({ page, setPage, cartItems, cartOpen, setCartOpen, wishlist }) =
     { label: "Story", key: "about" },
   ];
 
-  const logoImg = "/branding/logo.jpeg";
+  const logoImg = "/images/logo.png";
   const [logoErr, setLogoErr] = useState(false);
 
   return (
@@ -292,7 +292,7 @@ const HeroSection = ({ setPage, addToCart }) => {
     return () => clearInterval(t);
   }, []);
 
-  const heroBg = "/campaigns/hero-banner.jpg";
+  const heroBg = "/images/Werbebanner.png";
   const [heroBgErr, setHeroBgErr] = useState(false);
 
   return (
