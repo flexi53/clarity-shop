@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { ShoppingCart, X, Plus, Minus, Heart, Search, Menu, ChevronRight, ChevronDown, Star, Zap, Shield, Truck, Award, ArrowRight, Instagram, Twitter, Youtube, Check, Package, Globe } from "lucide-react";
+import { ShoppingCart, X, Plus, Minus, Heart, Search, Menu, ChevronRight, ChevronDown, Star, Zap, Shield, Truck, Award, ArrowRight, Check, Package, Globe } from "lucide-react";
 
 // ─── Font Injection ────────────────────────────────────────────────────────
 const FontLoader = () => {
@@ -700,7 +700,7 @@ const Footer = ({ setPage }) => {
             )}
             <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.7, marginBottom: 20, maxWidth: 240 }}>Premium Energy Drinks. Engineered for focus. Built for those who demand more.</p>
             <div style={{ display: "flex", gap: 10 }}>
-              {[Instagram, Twitter, Youtube].map((Icon, i) => (
+              {[Globe, ArrowRight, Zap].map((Icon, i) => (
                 <a key={i} href="#" aria-label="Social Media" style={{ width: 36, height: 36, borderRadius: 10, background: "var(--bg-card)", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", textDecoration: "none" }}>
                   <Icon size={16} />
                 </a>
