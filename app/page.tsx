@@ -268,9 +268,19 @@ const Header = ({ page, setPage, cartItems, cartOpen, setCartOpen, wishlist }) =
           ))}
         </nav>
 
+        {/* Inline Search */}
+        {searchOpen && (
+          <div style={{ flex: 1, maxWidth: 320, margin: "0 16px", position: "relative" }}>
+            <Search size={14} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", pointerEvents: "none" }} />
+            <input autoFocus placeholder="Sorten, Bundles, Angebote…"
+              onBlur={() => setSearchOpen(false)}
+              style={{ width: "100%", background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 12, padding: "8px 14px 8px 36px", color: "var(--text-primary)", fontSize: 13, outline: "none" }} />
+          </div>
+        )}
+
         {/* Actions */}
         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <button onClick={() => setSearchOpen(!searchOpen)} aria-label="Suche" style={{ background: "none", border: "none", cursor: "pointer", padding: 10, borderRadius: 10, color: "var(--text-secondary)" }}><Search size={18} /></button>
+          <button onClick={() => setSearchOpen(!searchOpen)} aria-label="Suche" style={{ background: searchOpen ? "rgba(255,255,255,0.1)" : "none", border: "none", cursor: "pointer", padding: 10, borderRadius: 10, color: searchOpen ? "var(--text-primary)" : "var(--text-secondary)" }}><Search size={18} /></button>
           <button onClick={() => setPage("wishlist")} aria-label="Wunschliste" style={{ background: "none", border: "none", cursor: "pointer", padding: 10, borderRadius: 10, color: "var(--text-secondary)", position: "relative" }}>
             <Heart size={18} />
             {wishlist.length > 0 && <span style={{ position: "absolute", top: 5, right: 5, width: 8, height: 8, borderRadius: "50%", background: "var(--volcanic-1)" }} />}
@@ -284,15 +294,6 @@ const Header = ({ page, setPage, cartItems, cartOpen, setCartOpen, wishlist }) =
           <button onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menü" style={{ background: "none", border: "none", cursor: "pointer", padding: 10, color: "var(--text-secondary)", display: "none" }}><Menu size={20} /></button>
         </div>
       </div>
-      {/* Search bar */}
-      {searchOpen && (
-        <div style={{ borderTop: "1px solid var(--border)", background: "rgba(4,5,13,0.98)", padding: "12px 24px" }}>
-          <div style={{ maxWidth: 1280, margin: "0 auto", position: "relative" }}>
-            <Search size={16} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
-            <input autoFocus placeholder="Suche nach Sorten, Bundles, Angeboten…" style={{ width: "100%", background: "var(--bg-card)", border: "1px solid var(--border-active)", borderRadius: 10, padding: "10px 14px 10px 42px", color: "var(--text-primary)", fontSize: 14, outline: "none" }} />
-          </div>
-        </div>
-      )}
     </header>
   );
 };
