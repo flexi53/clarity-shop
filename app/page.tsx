@@ -1098,8 +1098,8 @@ const ProductDetail = ({ product, addToCart, wishlist, toggleWishlist, setPage, 
 };
 
 // ─── Shop Page ─────────────────────────────────────────────────────────────
-const ShopPage = ({ addToCart, wishlist, toggleWishlist, onSelect }) => {
-  const [filter, setFilter] = useState("all");
+const ShopPage = ({ addToCart, wishlist, toggleWishlist, onSelect, initialFilter = "all" }) => {
+  const [filter, setFilter] = useState(initialFilter);
   const [sort, setSort] = useState("default");
   const [search, setSearch] = useState("");
   const filters = [{ k: "all", l: "Alle" }, { k: "single", l: "Einzeldosen" }, { k: "bundle", l: "Bundles" }, { k: "multipack", l: "Multipacks" }];
@@ -1442,7 +1442,7 @@ export default function App() {
 
   const renderPage = () => {
     if (page === "product" && selectedProduct) return <ProductDetail product={selectedProduct} addToCart={addToCart} wishlist={wishlist} toggleWishlist={toggleWishlist} setPage={setPage} addToast={addToast} />;
-    if (page === "shop" || page === "flavors" || page === "bundles") return <ShopPage addToCart={addToCart} wishlist={wishlist} toggleWishlist={toggleWishlist} onSelect={onSelect} />;
+    if (page === "shop" || page === "flavors" || page === "bundles") return <ShopPage addToCart={addToCart} wishlist={wishlist} toggleWishlist={toggleWishlist} onSelect={onSelect} initialFilter={page === "flavors" ? "single" : page === "bundles" ? "bundle" : "all"} />;
     if (page === "about") return <AboutPage />;
     if (page === "faq") return <FAQPage />;
     if (page === "checkout") return <CheckoutPage cartItems={cartItems} setPage={setPage} clearCart={() => setCartItems([])} />;
