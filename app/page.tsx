@@ -815,11 +815,14 @@ const Footer = ({ setPage }) => {
             )}
             <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.7, marginBottom: 20, maxWidth: 240 }}>Premium Energy Drinks. Engineered for focus. Built for those who demand more.</p>
             <div style={{ display: "flex", gap: 10 }}>
-              {[Globe, ArrowRight, Zap].map((Icon, i) => (
-                <a key={i} href="#" aria-label="Social Media" style={{ width: 36, height: 36, borderRadius: 10, background: "var(--bg-card)", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", textDecoration: "none" }}>
-                  <Icon size={16} />
-                </a>
-              ))}
+              <a href="https://www.instagram.com/clarity.energydrink?igsh=MXE3NTNzNXZ1Mjdl" target="_blank" rel="noopener noreferrer" aria-label="Instagram"
+                style={{ width: 36, height: 36, borderRadius: 10, background: "var(--bg-card)", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", textDecoration: "none", transition: "all 0.2s" }}
+                onMouseEnter={e => { e.currentTarget.style.background = "linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)"; e.currentTarget.style.borderColor = "transparent"; e.currentTarget.style.color = "white"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "var(--bg-card)"; e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--text-muted)"; }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                </svg>
+              </a>
             </div>
           </div>
           {Object.entries(links).map(([col, items]) => (
