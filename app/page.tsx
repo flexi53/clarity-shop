@@ -504,9 +504,9 @@ const PromoBanner = ({ setPage }) => {
 // ─── Flavor Worlds ─────────────────────────────────────────────────────────
 const FlavorWorlds = ({ setPage, onSelect }) => {
   const worlds = [
-    { key: "plasma", name: "Plasma", desc: "Elektrische Energie. Violett wie Blitze, scharf wie Fokus.", color1: "#c855ff", color2: "#ff40a8", img: "/products/plasma.jpg", product: PRODUCTS[0] },
-    { key: "lunar", name: "Lunar", desc: "Kristallklare Ausdauer. Kühl wie tiefer Weltraum, präzise wie ein Orbit.", color1: "#00d4ff", color2: "#7ba5ff", img: "/products/lunar.jpg", product: PRODUCTS[1] },
-    { key: "volcanic", name: "Volcanic", desc: "Rohe Kraft. Orange wie Lava, heiß wie reine Intensität.", color1: "#ff5500", color2: "#ffaa00", img: "/products/volcanic.jpg", product: PRODUCTS[2] },
+    { key: "plasma", name: "Plasma", desc: "Elektrische Energie. Violett wie Blitze, scharf wie Fokus.", color1: "#c855ff", color2: "#ff40a8", img: "/images/plasma.jpg", product: PRODUCTS[0] },
+    { key: "lunar", name: "Lunar", desc: "Kristallklare Ausdauer. Kühl wie tiefer Weltraum, präzise wie ein Orbit.", color1: "#00d4ff", color2: "#7ba5ff", img: "/images/lunar.jpg", product: PRODUCTS[1] },
+    { key: "volcanic", name: "Volcanic", desc: "Rohe Kraft. Orange wie Lava, heiß wie reine Intensität.", color1: "#ff5500", color2: "#ffaa00", img: "/images/volcanic.png", product: PRODUCTS[2] },
   ];
   return (
     <section style={{ padding: "100px 24px" }}>
