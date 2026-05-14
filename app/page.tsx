@@ -354,9 +354,9 @@ const HeroSection = ({ setPage, addToCart }) => {
 
         {/* Product Visual */}
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "relative" }}>
-          <div style={{ position: "absolute", width: 400, height: 400, borderRadius: "50%", background: `radial-gradient(circle, ${p.glow} 0%, transparent 70%)`, filter: "blur(40px)", animation: "pulseGlow 3s ease-in-out infinite" }} />
-          <div key={activeSlide + "-img"} className="animate-float" style={{ width: 300, height: 400, position: "relative" }}>
-            <ProductVisual product={p} size={300} />
+          <div style={{ position: "absolute", width: 600, height: 600, borderRadius: "50%", background: `radial-gradient(circle, ${p.glow} 0%, transparent 70%)`, filter: "blur(60px)", animation: "pulseGlow 3s ease-in-out infinite" }} />
+          <div key={activeSlide + "-img"} className="animate-float" style={{ width: 480, height: 560, position: "relative" }}>
+            <ProductVisual product={p} size={480} />
           </div>
         </div>
       </div>
