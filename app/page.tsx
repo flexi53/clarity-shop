@@ -179,11 +179,14 @@ const Toast = ({ toasts, removeToast }) => (
 const ProductVisual = ({ product, size = 200, style = {} }) => {
   const [imgError, setImgError] = useState(false);
   const src = product.images[0];
+  const needsCrop = product.flavor === "plasma" || product.flavor === "lunar";
   if (!imgError) {
     return (
-      <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: 16, ...style }}>
-        <img src={src} alt={product.name} onError={() => setImgError(true)}
-          style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", borderRadius: 16, border: `1px solid ${product.color1}33`, boxShadow: `0 0 24px ${product.glow}, 0 4px 16px rgba(0,0,0,0.4)` }} />
+      <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: needsCrop ? 8 : 16, ...style }}>
+        <div style={{ borderRadius: 16, border: `1px solid ${product.color1}33`, boxShadow: `0 0 24px ${product.glow}, 0 4px 16px rgba(0,0,0,0.4)`, overflow: "hidden", maxWidth: "100%", maxHeight: "100%", display: "flex" }}>
+          <img src={src} alt={product.name} onError={() => setImgError(true)}
+            style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "cover", objectPosition: needsCrop ? "top left" : "center", transform: needsCrop ? "scale(1.08) translate(-2%, -2%)" : "none", display: "block" }} />
+        </div>
       </div>
     );
   }
@@ -252,12 +255,14 @@ const Header = ({ page, setPage, cartItems, cartOpen, setCartOpen, wishlist }) =
           {navLinks.map(l => (
             <button key={l.key} onClick={() => setPage(l.key)}
               style={{
-                background: page === l.key ? "rgba(255,255,255,0.1)" : "none",
-                border: page === l.key ? "1px solid rgba(255,255,255,0.15)" : "1px solid transparent",
+                background: page === l.key ? "rgba(255,255,255,0.12)" : "none",
+                border: page === l.key ? "1px solid rgba(255,255,255,0.18)" : "1px solid transparent",
                 cursor: "pointer", padding: "8px 18px", borderRadius: 12, fontSize: 14, fontWeight: 500,
                 color: page === l.key ? "var(--text-primary)" : "var(--text-secondary)",
-                transition: "all 0.2s", backdropFilter: page === l.key ? "blur(8px)" : "none",
-              }}>
+                transition: "all 0.2s", backdropFilter: "blur(8px)",
+              }}
+              onMouseEnter={e => { if (page !== l.key) { e.currentTarget.style.background = "rgba(255,255,255,0.07)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; e.currentTarget.style.color = "var(--text-primary)"; }}}
+              onMouseLeave={e => { if (page !== l.key) { e.currentTarget.style.background = "none"; e.currentTarget.style.borderColor = "transparent"; e.currentTarget.style.color = "var(--text-secondary)"; }}}>
               {l.label}
             </button>
           ))}
@@ -444,25 +449,22 @@ const FeaturedSection = ({ setPage, addToCart, wishlist, toggleWishlist, onSelec
 
 // ─── Promo Banner ──────────────────────────────────────────────────────────
 const PromoBanner = ({ setPage }) => {
-  const [bgErr, setBgErr] = useState(false);
   return (
-    <section style={{ margin: "0 24px", borderRadius: 20, overflow: "hidden", position: "relative", minHeight: 280 }} aria-label="Aktionsangebot">
-      {!bgErr ? (
-        <img src="/campaigns/nimm3-zahle2.jpeg" alt="Nimm 3, zahle 2 Aktion" onError={() => setBgErr(true)} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-      ) : (
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, #1a0533 0%, #0a0520 50%, #001020 100%)" }}>
-          <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 20% 50%, rgba(200,85,255,0.3), transparent 60%)" }} />
-          <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 80% 50%, rgba(0,212,255,0.2), transparent 60%)" }} />
+    <section style={{ position: "relative", overflow: "hidden", minHeight: 360 }} aria-label="Aktionsangebot">
+      {/* Full-width background image */}
+      <img src="/images/Werbebanner_Rabatt.png" alt="Rabattaktion" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
+      {/* Dark overlay for readability */}
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to left, rgba(4,5,13,0.92) 0%, rgba(4,5,13,0.7) 50%, rgba(4,5,13,0.2) 100%)" }} />
+      {/* Text — right side */}
+      <div style={{ position: "relative", maxWidth: 1280, margin: "0 auto", padding: "80px 48px", display: "flex", justifyContent: "flex-end" }}>
+        <div style={{ maxWidth: 460 }}>
+          <div style={{ display: "inline-block", background: "rgba(255,85,0,0.2)", border: "1px solid rgba(255,85,0,0.5)", borderRadius: 6, padding: "4px 12px", fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "#ff5500", marginBottom: 20 }}>LIMITIERTES ANGEBOT</div>
+          <h2 style={{ fontSize: "clamp(32px, 4vw, 58px)", fontWeight: 800, letterSpacing: -1, marginBottom: 14, lineHeight: 1.05 }}>Nimm 3.<br /><span style={{ color: "#ff9d00" }}>Zahle 2.</span></h2>
+          <p style={{ fontSize: 16, color: "var(--text-secondary)", marginBottom: 32, lineHeight: 1.6 }}>Kombiniere beliebige Sorten. Der günstigste Artikel ist gratis. Gültig bis zum Ende des Monats.</p>
+          <button onClick={() => setPage("shop")} style={{ background: "linear-gradient(135deg, #ff5500, #ff9d00)", border: "none", borderRadius: 10, padding: "14px 32px", color: "white", fontWeight: 700, fontSize: 15, cursor: "pointer", boxShadow: "0 0 32px rgba(255,85,0,0.5)" }}>
+            Jetzt sparen
+          </button>
         </div>
-      )}
-      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(4,5,13,0.85) 0%, rgba(4,5,13,0.5) 60%, transparent 100%)" }} />
-      <div style={{ position: "relative", padding: "60px 48px", maxWidth: 600 }}>
-        <div style={{ display: "inline-block", background: "rgba(255,85,0,0.2)", border: "1px solid rgba(255,85,0,0.5)", borderRadius: 6, padding: "4px 12px", fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "#ff5500", marginBottom: 16 }}>LIMITIERTES ANGEBOT</div>
-        <h2 style={{ fontSize: "clamp(28px, 4vw, 52px)", fontWeight: 800, letterSpacing: -1, marginBottom: 12, lineHeight: 1.1 }}>Nimm 3.<br /><span style={{ color: "#ff9d00" }}>Zahle 2.</span></h2>
-        <p style={{ fontSize: 16, color: "var(--text-secondary)", marginBottom: 28, maxWidth: 380 }}>Kombiniere beliebige Sorten. Der günstigste Artikel ist gratis. Gültig bis zum Ende des Monats.</p>
-        <button onClick={() => setPage("shop")} style={{ background: "linear-gradient(135deg, #ff5500, #ff9d00)", border: "none", borderRadius: 10, padding: "14px 28px", color: "white", fontWeight: 700, fontSize: 15, cursor: "pointer", boxShadow: "0 0 24px rgba(255,85,0,0.4)" }}>
-          Jetzt sparen
-        </button>
       </div>
     </section>
   );
