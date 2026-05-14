@@ -228,22 +228,36 @@ const Header = ({ page, setPage, cartItems, cartOpen, setCartOpen, wishlist }) =
   const [logoErr, setLogoErr] = useState(false);
 
   return (
-    <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000, transition: "all 0.3s ease", background: scrolled ? "rgba(4,5,13,0.95)" : "transparent", backdropFilter: scrolled ? "blur(20px)" : "none", borderBottom: scrolled ? "1px solid var(--border)" : "none" }}>
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 24px", height: 68, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        {/* Logo */}
-        <button onClick={() => setPage("home")} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 10 }}>
+    <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000, transition: "all 0.4s ease", padding: "12px 24px" }}>
+      <div style={{
+        maxWidth: 1280, margin: "0 auto", height: 72, display: "flex", alignItems: "center", justifyContent: "space-between",
+        background: "rgba(255,255,255,0.05)",
+        backdropFilter: "blur(24px) saturate(180%)",
+        WebkitBackdropFilter: "blur(24px) saturate(180%)",
+        borderRadius: 20,
+        border: "1px solid rgba(255,255,255,0.12)",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)",
+        padding: "0 24px",
+      }}>
+        {/* Logo + Title */}
+        <button onClick={() => setPage("home")} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 12 }}>
           {!logoErr ? (
-            <img src={logoImg} alt="Clarity" onError={() => setLogoErr(true)} style={{ height: 32, objectFit: "contain" }} />
-          ) : (
-            <span className="font-display" style={{ fontSize: 22, fontWeight: 900, letterSpacing: 3, color: "var(--text-primary)" }}>CLARITY</span>
-          )}
+            <img src={logoImg} alt="Clarity" onError={() => setLogoErr(true)} style={{ height: 44, width: 44, objectFit: "contain", borderRadius: 10, background: "rgba(255,255,255,0.05)", padding: 2 }} />
+          ) : null}
+          <span className="font-display" style={{ fontSize: 20, fontWeight: 900, letterSpacing: 3, color: "var(--text-primary)", textShadow: "0 0 20px rgba(123,92,255,0.5)" }}>CLARITY</span>
         </button>
 
         {/* Desktop Nav */}
-        <nav style={{ display: "flex", gap: 4, alignItems: "center" }} aria-label="Hauptnavigation">
+        <nav style={{ display: "flex", gap: 2, alignItems: "center" }} aria-label="Hauptnavigation">
           {navLinks.map(l => (
             <button key={l.key} onClick={() => setPage(l.key)}
-              style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 14px", borderRadius: 8, fontSize: 14, fontWeight: 500, color: page === l.key ? "var(--text-primary)" : "var(--text-secondary)", transition: "all 0.2s" }}>
+              style={{
+                background: page === l.key ? "rgba(255,255,255,0.1)" : "none",
+                border: page === l.key ? "1px solid rgba(255,255,255,0.15)" : "1px solid transparent",
+                cursor: "pointer", padding: "8px 18px", borderRadius: 12, fontSize: 14, fontWeight: 500,
+                color: page === l.key ? "var(--text-primary)" : "var(--text-secondary)",
+                transition: "all 0.2s", backdropFilter: page === l.key ? "blur(8px)" : "none",
+              }}>
               {l.label}
             </button>
           ))}
@@ -251,15 +265,15 @@ const Header = ({ page, setPage, cartItems, cartOpen, setCartOpen, wishlist }) =
 
         {/* Actions */}
         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <button onClick={() => setSearchOpen(!searchOpen)} aria-label="Suche" style={{ background: "none", border: "none", cursor: "pointer", padding: 10, borderRadius: 8, color: "var(--text-secondary)" }}><Search size={18} /></button>
-          <button onClick={() => setPage("wishlist")} aria-label="Wunschliste" style={{ background: "none", border: "none", cursor: "pointer", padding: 10, borderRadius: 8, color: "var(--text-secondary)", position: "relative" }}>
+          <button onClick={() => setSearchOpen(!searchOpen)} aria-label="Suche" style={{ background: "none", border: "none", cursor: "pointer", padding: 10, borderRadius: 10, color: "var(--text-secondary)" }}><Search size={18} /></button>
+          <button onClick={() => setPage("wishlist")} aria-label="Wunschliste" style={{ background: "none", border: "none", cursor: "pointer", padding: 10, borderRadius: 10, color: "var(--text-secondary)", position: "relative" }}>
             <Heart size={18} />
             {wishlist.length > 0 && <span style={{ position: "absolute", top: 5, right: 5, width: 8, height: 8, borderRadius: "50%", background: "var(--volcanic-1)" }} />}
           </button>
-          <button onClick={() => setCartOpen(true)} aria-label={`Warenkorb (${cartCount} Artikel)`} style={{ background: "none", border: "none", cursor: "pointer", padding: 10, borderRadius: 8, color: "var(--text-primary)", position: "relative" }}>
+          <button onClick={() => setCartOpen(true)} aria-label={`Warenkorb (${cartCount} Artikel)`} style={{ background: "rgba(123,92,255,0.15)", border: "1px solid rgba(123,92,255,0.3)", cursor: "pointer", padding: "8px 14px", borderRadius: 12, color: "var(--text-primary)", position: "relative", display: "flex", alignItems: "center", gap: 6 }}>
             <ShoppingCart size={18} />
             {cartCount > 0 && (
-              <span style={{ position: "absolute", top: 3, right: 3, width: 18, height: 18, borderRadius: "50%", background: "var(--brand)", fontSize: 10, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", color: "white" }}>{cartCount}</span>
+              <span style={{ width: 20, height: 20, borderRadius: "50%", background: "var(--brand)", fontSize: 10, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", color: "white" }}>{cartCount}</span>
             )}
           </button>
           <button onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menü" style={{ background: "none", border: "none", cursor: "pointer", padding: 10, color: "var(--text-secondary)", display: "none" }}><Menu size={20} /></button>
@@ -294,25 +308,13 @@ const HeroSection = ({ setPage, addToCart }) => {
     return () => clearInterval(t);
   }, []);
 
-  const heroBg = "/images/Werbebanner.png";
-  const [heroBgErr, setHeroBgErr] = useState(false);
-
   return (
-    <section style={{ minHeight: "100vh", position: "relative", display: "flex", alignItems: "center", overflow: "hidden" }} aria-label="Hero">
-      {/* Background */}
-      {!heroBgErr ? (
-        <img src={heroBg} alt="" onError={() => setHeroBgErr(true)} role="presentation"
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.4 }} />
-      ) : (
-        <div style={{ position: "absolute", inset: 0 }}>
-          <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse 80% 80% at 70% 50%, ${p.color1}18 0%, transparent 60%)` }} />
-          <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse 60% 60% at 80% 80%, ${p.color2}12 0%, transparent 50%)` }} />
-          {/* Stars */}
-          {[...Array(60)].map((_, i) => (
-            <div key={i} style={{ position: "absolute", width: Math.random() * 2 + 1, height: Math.random() * 2 + 1, borderRadius: "50%", background: "rgba(255,255,255,0.6)", left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`, animation: `pulseGlow ${2 + Math.random() * 3}s ease-in-out infinite`, animationDelay: `${Math.random() * 3}s` }} />
-          ))}
-        </div>
-      )}
+    <section style={{ minHeight: "100vh", position: "relative", display: "flex", alignItems: "center", overflow: "hidden", background: "var(--bg-deep)" }} aria-label="Hero">
+      {/* Background — subtle glow only */}
+      <div style={{ position: "absolute", inset: 0 }}>
+        <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse 80% 80% at 70% 50%, ${p.color1}18 0%, transparent 60%)` }} />
+        <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse 60% 60% at 80% 80%, ${p.color2}12 0%, transparent 50%)` }} />
+      </div>
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(4,5,13,0.95) 0%, rgba(4,5,13,0.7) 50%, rgba(4,5,13,0.3) 100%)" }} />
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 200, background: "linear-gradient(to top, var(--bg-deep), transparent)" }} />
 
