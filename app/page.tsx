@@ -180,13 +180,14 @@ const ProductVisual = ({ product, size = 200, style = {} }) => {
   const [imgError, setImgError] = useState(false);
   const src = product.images[0];
   const needsCrop = product.flavor === "plasma" || product.flavor === "lunar" || product.flavor === "volcanic";
-  const cropPos = product.flavor === "volcanic" ? "right center" : "top left";
+  const cropPos = product.flavor === "volcanic" ? "70% center" : "top left";
+  const cropTransform = product.flavor === "volcanic" ? "scale(1.6) translate(-10%, 0)" : "scale(1.08) translate(-2%, -2%)";
   if (!imgError) {
     return (
       <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: needsCrop ? 8 : 16, ...style }}>
         <div style={{ borderRadius: 16, border: `1px solid ${product.color1}33`, boxShadow: `0 0 24px ${product.glow}, 0 4px 16px rgba(0,0,0,0.4)`, overflow: "hidden", maxWidth: "100%", maxHeight: "100%", display: "flex" }}>
           <img src={src} alt={product.name} onError={() => setImgError(true)}
-            style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "cover", objectPosition: needsCrop ? cropPos : "center", transform: needsCrop ? "scale(1.08) translate(-2%, -2%)" : "none", display: "block" }} />
+            style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "cover", objectPosition: needsCrop ? cropPos : "center", transform: needsCrop ? cropTransform : "none", display: "block" }} />
         </div>
       </div>
     );
@@ -234,7 +235,7 @@ const Header = ({ page, setPage, cartItems, cartOpen, setCartOpen, wishlist }) =
   return (
     <header style={{ position: "fixed", top: 36, left: 0, right: 0, zIndex: 1000, transition: "all 0.4s ease", padding: "12px 24px" }}>
       <div style={{
-        maxWidth: 1280, margin: "0 auto", height: 72, display: "flex", alignItems: "center", justifyContent: "space-between",
+        maxWidth: 1280, margin: "0 auto", height: 72, display: "flex", alignItems: "center", justifyContent: "center",
         background: "rgba(255,255,255,0.05)",
         backdropFilter: "blur(24px) saturate(180%)",
         WebkitBackdropFilter: "blur(24px) saturate(180%)",
@@ -242,16 +243,17 @@ const Header = ({ page, setPage, cartItems, cartOpen, setCartOpen, wishlist }) =
         border: "1px solid rgba(255,255,255,0.12)",
         boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)",
         padding: "0 24px",
+        position: "relative",
       }}>
-        {/* Logo + Title */}
-        <button onClick={() => setPage("home")} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 12 }}>
+        {/* Logo + Title — fixed left */}
+        <button onClick={() => setPage("home")} style={{ position: "absolute", left: 24, background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 12 }}>
           {!logoErr ? (
             <img src={logoImg} alt="Clarity" onError={() => setLogoErr(true)} style={{ height: 44, width: 44, objectFit: "contain", borderRadius: 10, background: "rgba(255,255,255,0.05)", padding: 2 }} />
           ) : null}
           <span className="font-display" style={{ fontSize: 20, fontWeight: 900, letterSpacing: 3, color: "var(--text-primary)", textShadow: "0 0 20px rgba(123,92,255,0.5)" }}>CLARITY</span>
         </button>
 
-        {/* Desktop Nav */}
+        {/* Desktop Nav — always centered */}
         <nav style={{ display: "flex", gap: 2, alignItems: "center" }} aria-label="Hauptnavigation">
           {navLinks.map(l => (
             <button key={l.key} onClick={() => setPage(l.key)}
@@ -269,19 +271,19 @@ const Header = ({ page, setPage, cartItems, cartOpen, setCartOpen, wishlist }) =
           ))}
         </nav>
 
-        {/* Actions */}
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          {/* Search — fixed width slot so layout never shifts */}
-          <div style={{ width: searchOpen ? 220 : 38, transition: "width 0.25s ease", overflow: "hidden", position: "relative" }}>
-            {searchOpen ? (
-              <>
-                <Search size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", pointerEvents: "none", zIndex: 1 }} />
+        {/* Actions — fixed right, search overlays inline without shifting */}
+        <div style={{ position: "absolute", right: 24, display: "flex", alignItems: "center", gap: 4 }}>
+          <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+            <button onClick={() => setSearchOpen(!searchOpen)} aria-label="Suche"
+              style={{ background: searchOpen ? "rgba(255,255,255,0.1)" : "none", border: "none", cursor: "pointer", padding: 10, borderRadius: 10, color: searchOpen ? "var(--text-primary)" : "var(--text-secondary)", zIndex: 2, position: "relative" }}>
+              <Search size={18} />
+            </button>
+            {searchOpen && (
+              <div style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)", width: 220, zIndex: 1 }}>
                 <input autoFocus placeholder="Sorten, Bundles…"
                   onBlur={() => setSearchOpen(false)}
-                  style={{ width: "100%", background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 10, padding: "7px 12px 7px 32px", color: "var(--text-primary)", fontSize: 13, outline: "none" }} />
-              </>
-            ) : (
-              <button onClick={() => setSearchOpen(true)} aria-label="Suche" style={{ background: "none", border: "none", cursor: "pointer", padding: 10, borderRadius: 10, color: "var(--text-secondary)", width: 38, display: "flex", alignItems: "center", justifyContent: "center" }}><Search size={18} /></button>
+                  style={{ width: "100%", background: "rgba(15,16,30,0.97)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 10, padding: "8px 38px 8px 14px", color: "var(--text-primary)", fontSize: 13, outline: "none" }} />
+              </div>
             )}
           </div>
           <button onClick={() => setPage("wishlist")} aria-label="Wunschliste" style={{ background: "none", border: "none", cursor: "pointer", padding: 10, borderRadius: 10, color: "var(--text-secondary)", position: "relative" }}>
