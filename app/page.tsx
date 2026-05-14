@@ -181,8 +181,10 @@ const ProductVisual = ({ product, size = 200, style = {} }) => {
   const src = product.images[0];
   if (!imgError) {
     return (
-      <img src={src} alt={product.name} onError={() => setImgError(true)}
-        style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "inherit", ...style }} />
+      <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: 16, ...style }}>
+        <img src={src} alt={product.name} onError={() => setImgError(true)}
+          style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", borderRadius: 16, border: `1px solid ${product.color1}33`, boxShadow: `0 0 24px ${product.glow}, 0 4px 16px rgba(0,0,0,0.4)` }} />
+      </div>
     );
   }
   // Fallback gradient visual
