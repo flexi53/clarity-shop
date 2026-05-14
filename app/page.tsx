@@ -231,7 +231,7 @@ const Header = ({ page, setPage, cartItems, cartOpen, setCartOpen, wishlist }) =
   const [logoErr, setLogoErr] = useState(false);
 
   return (
-    <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000, transition: "all 0.4s ease", padding: "12px 24px" }}>
+    <header style={{ position: "fixed", top: 36, left: 0, right: 0, zIndex: 1000, transition: "all 0.4s ease", padding: "12px 24px" }}>
       <div style={{
         maxWidth: 1280, margin: "0 auto", height: 72, display: "flex", alignItems: "center", justifyContent: "space-between",
         background: "rgba(255,255,255,0.05)",
@@ -396,7 +396,7 @@ const ProductCard = ({ product, onSelect, addToCart, wishlist, toggleWishlist })
       </button>
 
       {/* Image with zoom on hover */}
-      <div onClick={() => onSelect(product)} style={{ height: 220, background: `radial-gradient(ellipse at center, ${product.glow} 0%, var(--bg-deep) 70%)`, position: "relative", overflow: "hidden" }}>
+      <div onClick={() => onSelect(product)} style={{ height: 300, background: `radial-gradient(ellipse at center, ${product.glow} 0%, var(--bg-deep) 70%)`, position: "relative", overflow: "hidden" }}>
         <div style={{ transform: hovered ? "scale(1.06)" : "scale(1)", transition: "transform 0.4s ease", height: "100%" }}>
           <ProductVisual product={product} size={180} />
         </div>
@@ -1444,7 +1444,7 @@ export default function App() {
     <div style={{ background: "var(--bg-deep)", minHeight: "100vh", color: "var(--text-primary)" }}>
       <FontLoader />
       <AnnouncementBar />
-      <div style={{ paddingTop: 36 }}>
+      <div style={{ paddingTop: 0 }}>
       <Header page={page} setPage={(p) => { setPage(p); window.scrollTo(0, 0); }} cartItems={cartItems} cartOpen={cartOpen} setCartOpen={setCartOpen} wishlist={wishlist} />
       <main id="main-content">
         {renderPage()}
