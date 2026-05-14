@@ -374,6 +374,7 @@ const HeroSection = ({ setPage, addToCart }) => {
 const ProductCard = ({ product, onSelect, addToCart, wishlist, toggleWishlist }) => {
   const [hovered, setHovered] = useState(false);
   const inWishlist = wishlist.includes(product.id);
+  const perUnit = product.category === "multipack" ? formatPrice(product.price / 6) : null;
 
   return (
     <article onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
@@ -384,14 +385,21 @@ const ProductCard = ({ product, onSelect, addToCart, wishlist, toggleWishlist })
           {product.badge}
         </div>
       )}
+      {perUnit && (
+        <div style={{ position: "absolute", top: 38, left: 12, zIndex: 2, background: "rgba(0,212,100,0.15)", border: "1px solid rgba(0,212,100,0.4)", borderRadius: 6, padding: "3px 8px", fontSize: 10, fontWeight: 600, color: "#00d464" }}>
+          nur {perUnit}/Dose
+        </div>
+      )}
       <button onClick={(e) => { e.stopPropagation(); toggleWishlist(product.id); }} aria-label={inWishlist ? "Von Wunschliste entfernen" : "Zur Wunschliste hinzufügen"}
         style={{ position: "absolute", top: 12, right: 12, zIndex: 2, background: "rgba(0,0,0,0.4)", border: "none", borderRadius: "50%", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: inWishlist ? product.color1 : "var(--text-muted)" }}>
         <Heart size={14} fill={inWishlist ? product.color1 : "none"} />
       </button>
 
-      {/* Image */}
-      <div onClick={() => onSelect(product)} style={{ height: 220, background: `radial-gradient(ellipse at center, ${product.glow} 0%, var(--bg-deep) 70%)`, position: "relative" }}>
-        <ProductVisual product={product} size={180} />
+      {/* Image with zoom on hover */}
+      <div onClick={() => onSelect(product)} style={{ height: 220, background: `radial-gradient(ellipse at center, ${product.glow} 0%, var(--bg-deep) 70%)`, position: "relative", overflow: "hidden" }}>
+        <div style={{ transform: hovered ? "scale(1.06)" : "scale(1)", transition: "transform 0.4s ease", height: "100%" }}>
+          <ProductVisual product={product} size={180} />
+        </div>
       </div>
 
       {/* Info */}
@@ -448,7 +456,20 @@ const FeaturedSection = ({ setPage, addToCart, wishlist, toggleWishlist, onSelec
 );
 
 // ─── Promo Banner ──────────────────────────────────────────────────────────
+const useCountdown = (targetDate: string) => {
+  const calc = () => {
+    const diff = new Date(targetDate).getTime() - Date.now();
+    if (diff <= 0) return { d: 0, h: 0, m: 0, s: 0 };
+    return { d: Math.floor(diff / 86400000), h: Math.floor((diff % 86400000) / 3600000), m: Math.floor((diff % 3600000) / 60000), s: Math.floor((diff % 60000) / 1000) };
+  };
+  const [t, setT] = useState(calc);
+  useEffect(() => { const i = setInterval(() => setT(calc()), 1000); return () => clearInterval(i); }, []);
+  return t;
+};
+
 const PromoBanner = ({ setPage }) => {
+  const { d, h, m, s } = useCountdown("2026-05-31T23:59:59");
+  const pad = (n: number) => String(n).padStart(2, "0");
   return (
     <section style={{ position: "relative", overflow: "hidden", minHeight: 360 }} aria-label="Aktionsangebot">
       {/* Full-width background image */}
@@ -460,7 +481,16 @@ const PromoBanner = ({ setPage }) => {
         <div style={{ maxWidth: 460 }}>
           <div style={{ display: "inline-block", background: "rgba(255,85,0,0.2)", border: "1px solid rgba(255,85,0,0.5)", borderRadius: 6, padding: "4px 12px", fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "#ff5500", marginBottom: 20 }}>LIMITIERTES ANGEBOT</div>
           <h2 style={{ fontSize: "clamp(32px, 4vw, 58px)", fontWeight: 800, letterSpacing: -1, marginBottom: 14, lineHeight: 1.05 }}>Nimm 3.<br /><span style={{ color: "#ff9d00" }}>Zahle 2.</span></h2>
-          <p style={{ fontSize: 16, color: "var(--text-secondary)", marginBottom: 32, lineHeight: 1.6 }}>Kombiniere beliebige Sorten. Der günstigste Artikel ist gratis. Gültig bis zum Ende des Monats.</p>
+          <p style={{ fontSize: 16, color: "var(--text-secondary)", marginBottom: 24, lineHeight: 1.6 }}>Kombiniere beliebige Sorten. Der günstigste Artikel ist gratis.</p>
+          {/* Countdown */}
+          <div style={{ display: "flex", gap: 12, marginBottom: 28 }}>
+            {[{ v: pad(d), l: "Tage" }, { v: pad(h), l: "Std" }, { v: pad(m), l: "Min" }, { v: pad(s), l: "Sek" }].map(({ v, l }) => (
+              <div key={l} style={{ textAlign: "center", background: "rgba(0,0,0,0.4)", border: "1px solid rgba(255,85,0,0.3)", borderRadius: 10, padding: "10px 14px", minWidth: 56 }}>
+                <div style={{ fontSize: 24, fontWeight: 800, color: "#ff9d00", fontFamily: "'Orbitron', monospace" }}>{v}</div>
+                <div style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: 1 }}>{l}</div>
+              </div>
+            ))}
+          </div>
           <button onClick={() => setPage("shop")} style={{ background: "linear-gradient(135deg, #ff5500, #ff9d00)", border: "none", borderRadius: 10, padding: "14px 32px", color: "white", fontWeight: 700, fontSize: 15, cursor: "pointer", boxShadow: "0 0 32px rgba(255,85,0,0.5)" }}>
             Jetzt sparen
           </button>
@@ -581,19 +611,45 @@ const BundleSection = ({ addToCart, onSelect }) => (
   </section>
 );
 
+// ─── Announcement Bar ──────────────────────────────────────────────────────
+const AnnouncementBar = () => {
+  const [idx, setIdx] = useState(0);
+  const msgs = ["🚚 Gratis Versand ab €30 · Jetzt bestellen", "⚡ Nimm 3, zahle 2 · Nur bis Ende Mai", "🧪 Neu: Clarity Lunar — jetzt im Shop"];
+  useEffect(() => { const t = setInterval(() => setIdx(i => (i + 1) % msgs.length), 3500); return () => clearInterval(t); }, []);
+  return (
+    <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1001, height: 36, background: "linear-gradient(90deg, #7b5cff, #c855ff, #7b5cff)", backgroundSize: "200% 100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, color: "white" }}>{msgs[idx]}</span>
+    </div>
+  );
+};
+
 // ─── Reviews ───────────────────────────────────────────────────────────────
 const ReviewsSection = () => {
-  const colors = { plasma: "#c855ff", lunar: "#00d4ff", volcanic: "#ff5500", mix: "#7b5cff" };
+  const colors: Record<string, string> = { plasma: "#c855ff", lunar: "#00d4ff", volcanic: "#ff5500", mix: "#7b5cff" };
+  const featured = REVIEWS[2];
   return (
     <section style={{ padding: "100px 24px", background: "var(--bg-base)" }}>
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-        <div style={{ textAlign: "center", marginBottom: 56 }}>
+        <div style={{ textAlign: "center", marginBottom: 48 }}>
           <div style={{ fontSize: 12, letterSpacing: 3, color: "var(--brand)", fontWeight: 600, marginBottom: 12 }}>COMMUNITY</div>
           <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, letterSpacing: -1 }}>Was Clarity-Nutzer sagen.</h2>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginTop: 16 }}>
-            <div style={{ display: "flex", gap: 2 }}>{[...Array(5)].map((_, i) => <Star key={i} size={18} fill="#c855ff" color="#c855ff" />)}</div>
-            <span style={{ fontSize: 24, fontWeight: 700 }}>4.8</span>
+            <div style={{ display: "flex", gap: 2 }}>{[...Array(5)].map((_, i) => <Star key={i} size={20} fill="#c855ff" color="#c855ff" />)}</div>
+            <span style={{ fontSize: 28, fontWeight: 800 }}>4.8</span>
             <span style={{ color: "var(--text-muted)", fontSize: 14 }}>aus 10.438 Bewertungen</span>
+          </div>
+        </div>
+        {/* Featured review */}
+        <div style={{ background: "linear-gradient(135deg, rgba(255,85,0,0.08), rgba(123,92,255,0.08))", border: "1px solid rgba(255,85,0,0.2)", borderRadius: 20, padding: "32px 40px", marginBottom: 32, position: "relative", overflow: "hidden" }}>
+          <div style={{ position: "absolute", top: -20, left: 20, fontSize: 120, color: "rgba(255,85,0,0.06)", fontFamily: "serif", lineHeight: 1 }}>&ldquo;</div>
+          <div style={{ display: "flex", gap: 2, marginBottom: 14 }}>{[...Array(5)].map((_, i) => <Star key={i} size={16} fill="#ff5500" color="#ff5500" />)}</div>
+          <p style={{ fontSize: 18, color: "var(--text-primary)", lineHeight: 1.7, marginBottom: 20, fontStyle: "italic", maxWidth: 700 }}>&ldquo;{featured.text}&rdquo;</p>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ width: 48, height: 48, borderRadius: "50%", background: `linear-gradient(135deg, ${colors[featured.flavor]}, ${colors[featured.flavor]}88)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 700, color: "white" }}>{featured.avatar}</div>
+            <div>
+              <div style={{ fontWeight: 700 }}>{featured.name}</div>
+              <div style={{ fontSize: 12, color: colors[featured.flavor] }}>{featured.product} · Verifizierter Kauf</div>
+            </div>
           </div>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
@@ -614,6 +670,59 @@ const ReviewsSection = () => {
               <p style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.6, marginBottom: 10 }}>&ldquo;{r.text}&rdquo;</p>
               <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{r.date}</div>
             </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ─── Community Gallery ─────────────────────────────────────────────────────
+const CommunityGallery = ({ onSelect }) => {
+  const items = [
+    { img: "/images/plasma.jpg", product: PRODUCTS[0], label: "@max.focuses" },
+    { img: "/images/volcanic.png", product: PRODUCTS[2], label: "@gym.grind" },
+    { img: "/images/allesorten.png", product: PRODUCTS[3], label: "@claritylife" },
+    { img: "/images/lunar.jpg", product: PRODUCTS[1], label: "@latenight.code" },
+    { img: "/images/plasma_icon.png", product: PRODUCTS[0], label: "@morningroutine" },
+    { img: "/images/volcanic_icon.png", product: PRODUCTS[2], label: "@fitnation" },
+  ];
+  return (
+    <section style={{ padding: "80px 24px" }}>
+      <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: 40 }}>
+          <div style={{ fontSize: 12, letterSpacing: 3, color: "var(--brand)", fontWeight: 600, marginBottom: 12 }}>COMMUNITY</div>
+          <h2 style={{ fontSize: "clamp(24px, 3vw, 40px)", fontWeight: 800, letterSpacing: -1 }}>Clarity in freier Wildbahn.</h2>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gridTemplateRows: "repeat(2, 200px)", gap: 8 }}>
+          {items.map((item, i) => (
+            <div key={i} onClick={() => onSelect(item.product)} style={{ position: "relative", borderRadius: 12, overflow: "hidden", cursor: "pointer", background: "var(--bg-card)" }}
+              onMouseEnter={e => { (e.currentTarget.querySelector(".gallery-overlay") as HTMLElement).style.opacity = "1"; }}
+              onMouseLeave={e => { (e.currentTarget.querySelector(".gallery-overlay") as HTMLElement).style.opacity = "0"; }}>
+              <img src={item.img} alt={item.label} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <div className="gallery-overlay" style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.55)", display: "flex", alignItems: "flex-end", padding: 12, opacity: 0, transition: "opacity 0.25s" }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: "white" }}>{item.label}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ─── Recently Viewed ───────────────────────────────────────────────────────
+const RecentlyViewed = ({ products, onSelect, addToCart, wishlist, toggleWishlist }) => {
+  if (products.length === 0) return null;
+  return (
+    <section style={{ padding: "60px 24px", background: "var(--bg-base)" }}>
+      <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+        <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 24, letterSpacing: -0.5 }}>Zuletzt angesehen</h3>
+        <div style={{ display: "flex", gap: 16, overflowX: "auto", paddingBottom: 8 }}>
+          {products.map(p => (
+            <div key={p.id} style={{ minWidth: 200, maxWidth: 200 }}>
+              <ProductCard product={p} onSelect={onSelect} addToCart={addToCart} wishlist={wishlist} toggleWishlist={toggleWishlist} />
+            </div>
           ))}
         </div>
       </div>
@@ -1257,7 +1366,7 @@ const TermsPage = () => (
 );
 
 // ─── Home Page ─────────────────────────────────────────────────────────────
-const HomePage = ({ setPage, addToCart, wishlist, toggleWishlist, onSelect }) => (
+const HomePage = ({ setPage, addToCart, wishlist, toggleWishlist, onSelect, recentlyViewed }) => (
   <>
     <HeroSection setPage={setPage} addToCart={addToCart} />
     <USPBar />
@@ -1265,7 +1374,9 @@ const HomePage = ({ setPage, addToCart, wishlist, toggleWishlist, onSelect }) =>
     <PromoBanner setPage={setPage} />
     <FlavorWorlds setPage={setPage} onSelect={onSelect} />
     <BundleSection addToCart={addToCart} onSelect={onSelect} />
+    <CommunityGallery onSelect={onSelect} />
     <ReviewsSection />
+    <RecentlyViewed products={recentlyViewed} onSelect={onSelect} addToCart={addToCart} wishlist={wishlist} toggleWishlist={toggleWishlist} />
     <StorySection setPage={setPage} />
     <NewsletterSection />
   </>
@@ -1279,6 +1390,7 @@ export default function App() {
   const [cartOpen, setCartOpen] = useState(false);
   const [wishlist, setWishlist] = useState([]);
   const [toasts, setToasts] = useState([]);
+  const [recentlyViewed, setRecentlyViewed] = useState([]);
 
   const addToast = useCallback((message, type = "info") => {
     const id = Date.now();
@@ -1312,6 +1424,7 @@ export default function App() {
   const onSelect = useCallback((product) => {
     setSelectedProduct(product);
     setPage("product");
+    setRecentlyViewed(prev => [product, ...prev.filter(p => p.id !== product.id)].slice(0, 4));
     window.scrollTo(0, 0);
   }, []);
 
@@ -1324,12 +1437,14 @@ export default function App() {
     if (page === "imprint") return <ImprintPage />;
     if (page === "privacy") return <PrivacyPage />;
     if (page === "terms") return <TermsPage />;
-    return <HomePage setPage={setPage} addToCart={addToCart} wishlist={wishlist} toggleWishlist={toggleWishlist} onSelect={onSelect} />;
+    return <HomePage setPage={setPage} addToCart={addToCart} wishlist={wishlist} toggleWishlist={toggleWishlist} onSelect={onSelect} recentlyViewed={recentlyViewed} />;
   };
 
   return (
     <div style={{ background: "var(--bg-deep)", minHeight: "100vh", color: "var(--text-primary)" }}>
       <FontLoader />
+      <AnnouncementBar />
+      <div style={{ paddingTop: 36 }}>
       <Header page={page} setPage={(p) => { setPage(p); window.scrollTo(0, 0); }} cartItems={cartItems} cartOpen={cartOpen} setCartOpen={setCartOpen} wishlist={wishlist} />
       <main id="main-content">
         {renderPage()}
@@ -1337,6 +1452,7 @@ export default function App() {
       {!["checkout", "imprint", "privacy", "terms"].includes(page) && <Footer setPage={(p) => { setPage(p); window.scrollTo(0, 0); }} />}
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} cartItems={cartItems} updateQty={updateQty} removeFromCart={removeFromCart} setPage={setPage} />
       <Toast toasts={toasts} removeToast={(id) => setToasts(t => t.filter(x => x.id !== id))} />
+      </div>
     </div>
   );
 }
