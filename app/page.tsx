@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { ShoppingCart, X, Plus, Minus, Heart, Search, Menu, ChevronRight, ChevronDown, Star, Zap, Shield, Truck, Award, ArrowRight, Check, Package, Globe } from "lucide-react";
+import { ShoppingCart, X, Plus, Minus, Heart, Search, Menu, ChevronRight, ChevronDown, Star, Zap, Shield, Truck, Award, ArrowRight, Check, Package, Globe, Mail, CreditCard } from "lucide-react";
 
 // ─── Font Injection ────────────────────────────────────────────────────────
 const FontLoader = () => {
@@ -817,26 +817,59 @@ const StorySection = ({ setPage }) => {
 // ─── Newsletter ────────────────────────────────────────────────────────────
 const NewsletterSection = () => {
   const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+  const [mailed, setMailed] = useState(false);
+
+  const submit = async () => {
+    const val = email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+      setStatus("error");
+      setErrorMsg("Bitte gib eine gültige E-Mail-Adresse ein.");
+      return;
+    }
+    setStatus("loading");
+    setErrorMsg("");
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: val }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.ok) {
+        setMailed(Boolean(data.emailSent));
+        setStatus("done");
+      } else {
+        setStatus("error");
+        setErrorMsg(data.error || "Etwas ist schiefgelaufen. Bitte später erneut versuchen.");
+      }
+    } catch {
+      setStatus("error");
+      setErrorMsg("Netzwerkfehler. Bitte später erneut versuchen.");
+    }
+  };
+
   return (
     <section style={{ padding: "80px 24px", background: "var(--bg-card)", borderTop: "1px solid var(--border)" }}>
       <div style={{ maxWidth: 600, margin: "0 auto", textAlign: "center" }}>
         <div style={{ fontSize: 12, letterSpacing: 3, color: "var(--brand)", fontWeight: 600, marginBottom: 16 }}>CLARITY INSIDER</div>
         <h2 style={{ fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 800, letterSpacing: -0.5, marginBottom: 12 }}>Als Erster wissen. Als Erster sparen.</h2>
         <p style={{ color: "var(--text-secondary)", marginBottom: 28, fontSize: 15 }}>Neue Sorten, exklusive Drops, früher Zugang — direkt in dein Postfach.</p>
-        {submitted ? (
+        {status === "done" ? (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, color: "#00d464", fontSize: 16, fontWeight: 600 }}>
-            <Check size={20} /> Danke! Du bist dabei.
+            <Check size={20} /> {mailed ? "Danke! Wir haben dir eine Bestätigung geschickt — prüfe dein Postfach." : "Danke! Du bist dabei."}
           </div>
         ) : (
           <div style={{ display: "flex", gap: 10, maxWidth: 400, margin: "0 auto" }}>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="deine@email.de" aria-label="E-Mail-Adresse"
-              style={{ flex: 1, background: "var(--bg-surface)", border: "1px solid var(--border-active)", borderRadius: 10, padding: "12px 16px", color: "var(--text-primary)", fontSize: 14, outline: "none" }} />
-            <button onClick={() => email && setSubmitted(true)} style={{ background: "var(--brand)", border: "none", borderRadius: 10, padding: "12px 20px", color: "white", fontWeight: 600, fontSize: 14, cursor: "pointer", whiteSpace: "nowrap" }}>
-              Anmelden
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => { if (e.key === "Enter") submit(); }} placeholder="deine@email.de" aria-label="E-Mail-Adresse" disabled={status === "loading"}
+              style={{ flex: 1, background: "var(--bg-surface)", border: `1px solid ${status === "error" ? "rgba(255,85,0,0.5)" : "var(--border-active)"}`, borderRadius: 10, padding: "12px 16px", color: "var(--text-primary)", fontSize: 14, outline: "none" }} />
+            <button onClick={submit} disabled={status === "loading"} style={{ background: "var(--brand)", border: "none", borderRadius: 10, padding: "12px 20px", color: "white", fontWeight: 600, fontSize: 14, cursor: status === "loading" ? "default" : "pointer", opacity: status === "loading" ? 0.7 : 1, whiteSpace: "nowrap" }}>
+              {status === "loading" ? "Wird gesendet…" : "Anmelden"}
             </button>
           </div>
         )}
+        {status === "error" && <p style={{ fontSize: 13, color: "#ff7a45", marginTop: 12 }}>{errorMsg}</p>}
         <p style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 12 }}>Kein Spam. Jederzeit abmeldbar.</p>
       </div>
     </section>
@@ -1425,6 +1458,78 @@ const TermsPage = () => (
   </LegalPage>
 );
 
+// ─── Info Page Template (content pages, no legal warning banner) ────────────
+const InfoPage = ({ eyebrow, title, intro, children }) => (
+  <div style={{ minHeight: "100vh", paddingTop: 100, padding: "100px 24px 80px" }}>
+    <div style={{ maxWidth: 760, margin: "0 auto" }}>
+      <div style={{ fontSize: 12, letterSpacing: 3, color: "var(--brand)", fontWeight: 600, marginBottom: 12 }}>{eyebrow}</div>
+      <h1 style={{ fontSize: 36, fontWeight: 800, marginBottom: 16, letterSpacing: -1 }}>{title}</h1>
+      {intro && <p style={{ fontSize: 16, color: "var(--text-secondary)", lineHeight: 1.7, marginBottom: 32 }}>{intro}</p>}
+      <div style={{ fontSize: 15, color: "var(--text-secondary)", lineHeight: 1.8 }}>{children}</div>
+    </div>
+  </div>
+);
+
+const InfoRow = ({ icon, title, children }) => (
+  <div style={{ display: "flex", gap: 16, background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 14, padding: "18px 20px", marginBottom: 12 }}>
+    <div style={{ width: 42, height: 42, borderRadius: 12, background: "rgba(123,92,255,0.15)", border: "1px solid rgba(123,92,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--brand)", flexShrink: 0 }}>{icon}</div>
+    <div>
+      <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text-primary)", marginBottom: 4 }}>{title}</div>
+      <div style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.6 }}>{children}</div>
+    </div>
+  </div>
+);
+
+const ContactPage = () => (
+  <InfoPage eyebrow="KONTAKT" title="Sag Hallo." intro="Fragen zu deiner Bestellung, zu Sorten oder zu Kooperationen? Schreib uns — wir melden uns in der Regel innerhalb von 24 Stunden.">
+    <a href="mailto:hello@clarity-energy.de" style={{ textDecoration: "none" }}>
+      <InfoRow icon={<Mail size={18} />} title="E-Mail">hello@clarity-energy.de</InfoRow>
+    </a>
+    <a href="https://www.instagram.com/clarity.energydrink?igsh=MXE3NTNzNXZ1Mjdl" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+      <InfoRow icon={<Globe size={18} />} title="Instagram">@clarity.energydrink</InfoRow>
+    </a>
+    <a href="https://discord.gg/9e7BJEmvEs" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+      <InfoRow icon={<Zap size={18} />} title="Discord">Tritt der Clarity-Community bei</InfoRow>
+    </a>
+    <p style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 20 }}>Hinweis: E-Mail-Adresse ist ein Platzhalter — bitte vor Livegang durch die echte Kontaktadresse ersetzen.</p>
+  </InfoPage>
+);
+
+const ShippingPage = () => (
+  <InfoPage eyebrow="VERSAND & LIEFERUNG" title="Schnell bei dir." intro="Wir versenden werktags innerhalb von 24 Stunden. So kommt Clarity zu dir:">
+    <InfoRow icon={<Truck size={18} />} title="Lieferzeit">Standardlieferung innerhalb von 2–4 Werktagen nach Deutschland.</InfoRow>
+    <InfoRow icon={<Package size={18} />} title="Versandkosten">€3,90 pro Bestellung — <strong style={{ color: "#00d464" }}>gratis ab €30</strong> Bestellwert.</InfoRow>
+    <InfoRow icon={<Zap size={18} />} title="Express">Express-Versand optional an der Kasse wählbar (Zustellung am nächsten Werktag).</InfoRow>
+    <InfoRow icon={<Globe size={18} />} title="Liefergebiet">Aktuell Versand innerhalb Deutschlands. Weitere Länder folgen.</InfoRow>
+    <p style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 20 }}>Hinweis: Demo-Angaben. Bitte tatsächliche Versandkonditionen vor Livegang bestätigen.</p>
+  </InfoPage>
+);
+
+const PaymentPage = () => (
+  <InfoPage eyebrow="ZAHLUNGSARTEN" title="Sicher bezahlen." intro="Wähle an der Kasse deine bevorzugte Zahlungsart. Alle Zahlungen laufen SSL-verschlüsselt.">
+    <InfoRow icon={<CreditCard size={18} />} title="Kreditkarte">Visa und Mastercard.</InfoRow>
+    <InfoRow icon={<Shield size={18} />} title="PayPal">Schnell und käuferschutz-gesichert bezahlen.</InfoRow>
+    <InfoRow icon={<Check size={18} />} title="Klarna">Rechnungskauf — jetzt kaufen, später zahlen.</InfoRow>
+    <p style={{ fontSize: 13, color: "#ff9d00", marginTop: 20 }}>💡 Der Checkout ist aktuell eine Demo. Vor Livegang echten Zahlungsdienstleister (z. B. Stripe) anbinden.</p>
+  </InfoPage>
+);
+
+const RevocationPage = () => (
+  <LegalPage title="Widerrufsbelehrung">
+    <p><strong>Widerrufsrecht</strong><br />Du hast das Recht, binnen vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen. Die Widerrufsfrist beträgt vierzehn Tage ab dem Tag, an dem du oder ein von dir benannter Dritter die Waren in Besitz genommen hast/hat.</p>
+    <p><strong>Ausübung des Widerrufs</strong><br />Um dein Widerrufsrecht auszuüben, musst du uns [Firmenname, Anschrift, E-Mail, Telefon] mittels einer eindeutigen Erklärung (z. B. per Post oder E-Mail) über deinen Entschluss informieren.</p>
+    <p><strong>Folgen des Widerrufs</strong><br />Wenn du diesen Vertrag widerrufst, erstatten wir dir alle Zahlungen unverzüglich und spätestens binnen vierzehn Tagen zurück. [Platzhalter: vollständige gesetzliche Widerrufsbelehrung und Muster-Widerrufsformular ergänzen.]</p>
+  </LegalPage>
+);
+
+const CookiesPage = () => (
+  <LegalPage title="Cookie-Richtlinie">
+    <p><strong>1. Was sind Cookies?</strong><br />Cookies sind kleine Textdateien, die auf deinem Gerät gespeichert werden, um die Website funktionsfähig zu machen und ihre Nutzung zu analysieren.</p>
+    <p><strong>2. Eingesetzte Cookies</strong><br />[Platzhalter: notwendige, funktionale, Statistik- und Marketing-Cookies auflisten und beschreiben.]</p>
+    <p><strong>3. Einwilligung</strong><br />[Platzhalter: Cookie-Consent-Tool und Verwaltung der Einwilligung ergänzen.]</p>
+  </LegalPage>
+);
+
 // ─── Home Page ─────────────────────────────────────────────────────────────
 const HomePage = ({ setPage, addToCart, wishlist, toggleWishlist, onSelect, recentlyViewed }) => (
   <>
@@ -1497,6 +1602,11 @@ export default function App() {
     if (page === "imprint") return <ImprintPage />;
     if (page === "privacy") return <PrivacyPage />;
     if (page === "terms") return <TermsPage />;
+    if (page === "contact") return <ContactPage />;
+    if (page === "shipping") return <ShippingPage />;
+    if (page === "payment") return <PaymentPage />;
+    if (page === "revocation") return <RevocationPage />;
+    if (page === "cookies") return <CookiesPage />;
     return <HomePage setPage={setPage} addToCart={addToCart} wishlist={wishlist} toggleWishlist={toggleWishlist} onSelect={onSelect} recentlyViewed={recentlyViewed} />;
   };
 
