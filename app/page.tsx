@@ -57,6 +57,35 @@ const FontLoader = () => {
       .delay-3 { animation-delay: 0.3s; opacity:0; }
       .delay-4 { animation-delay: 0.4s; opacity:0; }
       .delay-5 { animation-delay: 0.5s; opacity:0; }
+
+      /* ─── Responsive layout (overrides inline grids on small screens) ─── */
+      .mobile-menu-btn { display: none; }
+      @media (max-width: 900px) {
+        .hero-grid { grid-template-columns: 1fr !important; gap: 8px !important; padding: 116px 20px 56px !important; text-align: center; }
+        .hero-copy { max-width: 560px; margin: 0 auto; }
+        .hero-cta { justify-content: center; }
+        .hero-dots { justify-content: center; }
+        .hero-visual-wrap { min-height: 320px; }
+        .hero-visual { width: 300px !important; height: 340px !important; }
+        .grid-2col { grid-template-columns: 1fr !important; gap: 36px !important; }
+        .checkout-grid { grid-template-columns: 1fr !important; gap: 28px !important; max-width: 600px !important; }
+        .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 32px 24px !important; }
+        .footer-brand { grid-column: 1 / -1 !important; }
+        .story-media { height: 300px !important; }
+      }
+      @media (max-width: 768px) {
+        .desktop-nav { display: none !important; }
+        .mobile-menu-btn { display: flex !important; }
+        .header-bar { padding: 0 14px !important; }
+        .gallery-grid { grid-template-columns: repeat(2, 1fr) !important; grid-template-rows: none !important; grid-auto-rows: 150px !important; }
+        .promo-inner { padding: 56px 24px !important; }
+        .section-pad { padding-top: 64px !important; padding-bottom: 64px !important; }
+        .detail-thumbs { display: none !important; }
+      }
+      @media (max-width: 480px) {
+        .hero-cta button { width: 100%; }
+        .about-stats { grid-template-columns: 1fr 1fr !important; }
+      }
     `;
     document.head.appendChild(style);
   }, []);
@@ -175,20 +204,19 @@ const Toast = ({ toasts, removeToast }) => (
   </div>
 );
 
-// ─── Product Visual (Gradient placeholder when real image not present) ──────
-const ProductVisual = ({ product, size = 200, style = {} }) => {
+// ─── Product Visual (uniform cover-fit; gradient fallback when image missing) ─
+const ProductVisual = ({ product, size = 200, style = {}, src, fit = "cover" }) => {
   const [imgError, setImgError] = useState(false);
-  const src = product.images[0];
-  const needsCrop = product.flavor === "plasma" || product.flavor === "lunar" || product.flavor === "volcanic";
-  const cropPos = product.flavor === "volcanic" ? "25% center" : "top left";
-  const cropTransform = product.flavor === "volcanic" ? "scale(1.5) translate(10%, 0)" : "scale(1.08) translate(-2%, -2%)";
+  const imgSrc = src || product.images[0];
   if (!imgError) {
+    // Every product image is rendered identically: full-bleed, centered, cover.
+    // No per-flavor crop hacks — the shared framing is what makes the set feel cohesive.
     return (
-      <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: needsCrop ? 8 : 16, ...style }}>
-        <div style={{ borderRadius: 16, border: `1px solid ${product.color1}33`, boxShadow: `0 0 24px ${product.glow}, 0 4px 16px rgba(0,0,0,0.4)`, overflow: "hidden", maxWidth: "100%", maxHeight: "100%", display: "flex" }}>
-          <img src={src} alt={product.name} onError={() => setImgError(true)}
-            style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "cover", objectPosition: needsCrop ? cropPos : "center", transform: needsCrop ? cropTransform : "none", display: "block" }} />
-        </div>
+      <div style={{ width: "100%", height: "100%", position: "relative", overflow: "hidden", ...style }}>
+        <img src={imgSrc} alt={product.name} onError={() => setImgError(true)}
+          style={{ width: "100%", height: "100%", objectFit: fit, objectPosition: "center", display: "block" }} />
+        {/* subtle inner vignette so the image blends into the dark UI */}
+        <div style={{ position: "absolute", inset: 0, boxShadow: "inset 0 0 60px rgba(4,5,13,0.55)", pointerEvents: "none" }} />
       </div>
     );
   }
@@ -234,7 +262,7 @@ const Header = ({ page, setPage, cartItems, cartOpen, setCartOpen, wishlist }) =
 
   return (
     <header style={{ position: "fixed", top: 36, left: 0, right: 0, zIndex: 1000, transition: "all 0.4s ease", padding: "12px 24px" }}>
-      <div style={{
+      <div className="header-bar" style={{
         maxWidth: 1280, margin: "0 auto", height: 72, display: "flex", alignItems: "center", justifyContent: "center",
         background: "rgba(255,255,255,0.05)",
         backdropFilter: "blur(24px) saturate(180%)",
@@ -254,7 +282,7 @@ const Header = ({ page, setPage, cartItems, cartOpen, setCartOpen, wishlist }) =
         </button>
 
         {/* Desktop Nav — always centered */}
-        <nav style={{ display: "flex", gap: 2, alignItems: "center" }} aria-label="Hauptnavigation">
+        <nav className="desktop-nav" style={{ display: "flex", gap: 2, alignItems: "center" }} aria-label="Hauptnavigation">
           {navLinks.map(l => (
             <button key={l.key} onClick={() => setPage(l.key)}
               style={{
@@ -296,9 +324,24 @@ const Header = ({ page, setPage, cartItems, cartOpen, setCartOpen, wishlist }) =
               <span style={{ width: 20, height: 20, borderRadius: "50%", background: "var(--brand)", fontSize: 10, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", color: "white" }}>{cartCount}</span>
             )}
           </button>
-          <button onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menü" style={{ background: "none", border: "none", cursor: "pointer", padding: 10, color: "var(--text-secondary)", display: "none" }}><Menu size={20} /></button>
+          <button className="mobile-menu-btn" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menü" aria-expanded={mobileOpen}
+            style={{ background: mobileOpen ? "rgba(255,255,255,0.1)" : "none", border: "none", cursor: "pointer", padding: 10, borderRadius: 10, color: mobileOpen ? "var(--text-primary)" : "var(--text-secondary)", alignItems: "center", justifyContent: "center" }}>
+            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile menu panel */}
+      {mobileOpen && (
+        <div className="animate-fadeUp" style={{ maxWidth: 1280, margin: "8px auto 0", background: "rgba(13,15,28,0.92)", backdropFilter: "blur(24px) saturate(180%)", WebkitBackdropFilter: "blur(24px) saturate(180%)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 18, padding: 8, boxShadow: "0 16px 48px rgba(0,0,0,0.5)" }}>
+          {navLinks.map(l => (
+            <button key={l.key} onClick={() => { setPage(l.key); setMobileOpen(false); }}
+              style={{ display: "block", width: "100%", textAlign: "left", background: page === l.key ? "rgba(255,255,255,0.08)" : "none", border: "none", cursor: "pointer", padding: "14px 16px", borderRadius: 12, fontSize: 15, fontWeight: 500, color: page === l.key ? "var(--text-primary)" : "var(--text-secondary)" }}>
+              {l.label}
+            </button>
+          ))}
+        </div>
+      )}
     </header>
   );
 };
@@ -330,9 +373,9 @@ const HeroSection = ({ setPage, addToCart }) => {
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 200, background: "linear-gradient(to top, var(--bg-deep), transparent)" }} />
 
       {/* Content */}
-      <div style={{ position: "relative", maxWidth: 1280, margin: "0 auto", padding: "160px 24px 80px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40, alignItems: "center", width: "100%" }}>
+      <div className="hero-grid" style={{ position: "relative", maxWidth: 1280, margin: "0 auto", padding: "160px 24px 80px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40, alignItems: "center", width: "100%" }}>
         {/* Text */}
-        <div key={activeSlide} className="animate-fadeUp">
+        <div key={activeSlide} className="animate-fadeUp hero-copy">
           <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-active)", borderRadius: 100, padding: "6px 14px", marginBottom: 24 }}>
             <div style={{ width: 6, height: 6, borderRadius: "50%", background: p.color1, animation: "pulseGlow 2s infinite" }} />
             <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: 2, color: p.color1 }}>NEW DROP</span>
@@ -341,8 +384,8 @@ const HeroSection = ({ setPage, addToCart }) => {
             {s.tagline}
           </div>
           <p style={{ fontSize: 18, color: "var(--text-secondary)", marginBottom: 36, lineHeight: 1.6, maxWidth: 420 }}>{s.sub}</p>
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <button onClick={() => setPage("shop")} style={{ background: `linear-gradient(135deg, ${p.color1}, ${p.color2})`, border: "none", borderRadius: 10, padding: "14px 28px", color: "white", fontWeight: 600, fontSize: 15, cursor: "pointer", boxShadow: `0 0 24px ${p.glow}` }}>
+          <div className="hero-cta" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <button onClick={() => setPage("shop")} style={{ background: `linear-gradient(135deg, ${p.color1}, ${p.color2})`, border: "none", borderRadius: 10, padding: "14px 28px", color: "white", fontWeight: 600, fontSize: 15, cursor: "pointer", boxShadow: `0 8px 28px -8px ${p.glow}` }}>
               {s.cta}
             </button>
             <button onClick={() => setPage("shop")} style={{ background: "transparent", border: "1px solid var(--border-active)", borderRadius: 10, padding: "14px 28px", color: "var(--text-primary)", fontWeight: 500, fontSize: 15, cursor: "pointer" }}>
@@ -350,7 +393,7 @@ const HeroSection = ({ setPage, addToCart }) => {
             </button>
           </div>
           {/* Slide dots */}
-          <div style={{ display: "flex", gap: 8, marginTop: 40 }}>
+          <div className="hero-dots" style={{ display: "flex", gap: 8, marginTop: 40 }}>
             {slides.map((_, i) => (
               <button key={i} onClick={() => setActiveSlide(i)} aria-label={`Slide ${i + 1}`}
                 style={{ width: i === activeSlide ? 24 : 8, height: 8, borderRadius: 4, background: i === activeSlide ? p.color1 : "var(--bg-surface)", border: "none", cursor: "pointer", transition: "all 0.3s" }} />
@@ -359,9 +402,9 @@ const HeroSection = ({ setPage, addToCart }) => {
         </div>
 
         {/* Product Visual */}
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "relative" }}>
+        <div className="hero-visual-wrap" style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "relative" }}>
           <div style={{ position: "absolute", width: 600, height: 600, borderRadius: "50%", background: `radial-gradient(circle, ${p.glow} 0%, transparent 70%)`, filter: "blur(60px)", animation: "pulseGlow 3s ease-in-out infinite" }} />
-          <div key={activeSlide + "-img"} className="animate-float" style={{ width: 480, height: 560, position: "relative" }}>
+          <div key={activeSlide + "-img"} className="animate-float hero-visual" style={{ width: 480, height: 560, position: "relative", borderRadius: 24, overflow: "hidden", border: `1px solid ${p.color1}22`, boxShadow: `0 24px 64px -24px ${p.glow}` }}>
             <ProductVisual product={p} size={480} />
           </div>
         </div>
@@ -483,7 +526,7 @@ const PromoBanner = ({ setPage }) => {
       {/* Dark overlay for readability */}
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to left, rgba(4,5,13,0.92) 0%, rgba(4,5,13,0.7) 50%, rgba(4,5,13,0.2) 100%)" }} />
       {/* Text — right side */}
-      <div style={{ position: "relative", maxWidth: 1280, margin: "0 auto", padding: "80px 48px", display: "flex", justifyContent: "flex-end" }}>
+      <div className="promo-inner" style={{ position: "relative", maxWidth: 1280, margin: "0 auto", padding: "80px 48px", display: "flex", justifyContent: "flex-end" }}>
         <div style={{ maxWidth: 460 }}>
           <div style={{ display: "inline-block", background: "rgba(255,85,0,0.2)", border: "1px solid rgba(255,85,0,0.5)", borderRadius: 6, padding: "4px 12px", fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "#ff5500", marginBottom: 20 }}>LIMITIERTES ANGEBOT</div>
           <h2 style={{ fontSize: "clamp(32px, 4vw, 58px)", fontWeight: 800, letterSpacing: -1, marginBottom: 14, lineHeight: 1.05 }}>Nimm 3.<br /><span style={{ color: "#ff9d00" }}>Zahle 2.</span></h2>
@@ -497,7 +540,7 @@ const PromoBanner = ({ setPage }) => {
               </div>
             ))}
           </div>
-          <button onClick={() => setPage("shop")} style={{ background: "linear-gradient(135deg, #ff5500, #ff9d00)", border: "none", borderRadius: 10, padding: "14px 32px", color: "white", fontWeight: 700, fontSize: 15, cursor: "pointer", boxShadow: "0 0 32px rgba(255,85,0,0.5)" }}>
+          <button onClick={() => setPage("shop")} style={{ background: "linear-gradient(135deg, #ff5500, #ff9d00)", border: "none", borderRadius: 10, padding: "14px 32px", color: "white", fontWeight: 700, fontSize: 15, cursor: "pointer", boxShadow: "0 10px 30px -10px rgba(255,85,0,0.7)" }}>
             Jetzt sparen
           </button>
         </div>
@@ -607,7 +650,7 @@ const BundleSection = ({ addToCart, onSelect }) => (
                 {p.comparePrice && <span style={{ fontSize: 13, color: "var(--text-muted)", textDecoration: "line-through", marginLeft: 8 }}>{formatPrice(p.comparePrice)}</span>}
               </div>
             </div>
-            <button onClick={() => addToCart(p, 1)} style={{ width: "100%", background: `linear-gradient(135deg, ${p.color1}, ${p.color2})`, border: "none", borderRadius: 10, padding: "12px", color: "white", fontWeight: 600, fontSize: 14, cursor: "pointer", boxShadow: `0 0 20px ${p.glow}` }}>
+            <button onClick={() => addToCart(p, 1)} style={{ width: "100%", background: `linear-gradient(135deg, ${p.color1}, ${p.color2})`, border: "none", borderRadius: 10, padding: "12px", color: "white", fontWeight: 600, fontSize: 14, cursor: "pointer", boxShadow: `0 8px 24px -8px ${p.glow}` }}>
               Jetzt sichern
             </button>
           </article>
@@ -700,7 +743,7 @@ const CommunityGallery = ({ onSelect }) => {
           <div style={{ fontSize: 12, letterSpacing: 3, color: "var(--brand)", fontWeight: 600, marginBottom: 12 }}>COMMUNITY</div>
           <h2 style={{ fontSize: "clamp(24px, 3vw, 40px)", fontWeight: 800, letterSpacing: -1 }}>Clarity in freier Wildbahn.</h2>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gridTemplateRows: "repeat(2, 200px)", gap: 8 }}>
+        <div className="gallery-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gridTemplateRows: "repeat(2, 200px)", gap: 8 }}>
           {items.map((item, i) => (
             <div key={i} onClick={() => onSelect(item.product)} style={{ position: "relative", borderRadius: 12, overflow: "hidden", cursor: "pointer", background: "var(--bg-card)" }}
               onMouseEnter={e => { (e.currentTarget.querySelector(".gallery-overlay") as HTMLElement).style.opacity = "1"; }}
@@ -742,7 +785,7 @@ const StorySection = ({ setPage }) => {
   return (
     <section style={{ padding: "100px 24px", position: "relative", overflow: "hidden" }}>
       <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 60% at 0% 50%, rgba(123,92,255,0.08), transparent)" }} />
-      <div style={{ maxWidth: 1280, margin: "0 auto", position: "relative", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "center" }}>
+      <div className="grid-2col" style={{ maxWidth: 1280, margin: "0 auto", position: "relative", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "center" }}>
         <div>
           <div style={{ fontSize: 12, letterSpacing: 3, color: "var(--brand)", fontWeight: 600, marginBottom: 16 }}>UNSERE STORY</div>
           <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, letterSpacing: -1, lineHeight: 1.1, marginBottom: 24 }}>Gebaut für den,<br />der mehr will.</h2>
@@ -752,9 +795,9 @@ const StorySection = ({ setPage }) => {
             Mehr über uns <ArrowRight size={16} />
           </button>
         </div>
-        <div style={{ borderRadius: 20, overflow: "hidden", height: 400, position: "relative" }}>
+        <div className="story-media" style={{ borderRadius: 20, overflow: "hidden", height: 400, position: "relative" }}>
           {!imgErr ? (
-            <img src="/campaigns/brand-story.jpg" alt="Clarity Brand Story" onError={() => setImgErr(true)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            <img src="/images/allesorten.png" alt="Clarity Brand Story" onError={() => setImgErr(true)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           ) : (
             <div style={{ width: "100%", height: "100%", background: "var(--bg-card)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--border)" }}>
               <div style={{ textAlign: "center", color: "var(--text-muted)" }}>
@@ -812,10 +855,10 @@ const Footer = ({ setPage }) => {
   return (
     <footer style={{ background: "var(--bg-deep)", borderTop: "1px solid var(--border)", padding: "60px 24px 32px" }}>
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr", gap: 40, marginBottom: 48 }}>
-          <div>
+        <div className="footer-grid" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr", gap: 40, marginBottom: 48 }}>
+          <div className="footer-brand">
             {!logoErr ? (
-              <img src="/branding/logo.jpeg" alt="Clarity" onError={() => setLogoErr(true)} style={{ height: 28, marginBottom: 16, objectFit: "contain" }} />
+              <img src="/images/logo.png" alt="Clarity" onError={() => setLogoErr(true)} style={{ height: 40, marginBottom: 16, objectFit: "contain" }} />
             ) : (
               <div className="font-display" style={{ fontSize: 20, fontWeight: 900, letterSpacing: 3, marginBottom: 16 }}>CLARITY</div>
             )}
@@ -982,27 +1025,27 @@ const ProductDetail = ({ product, addToCart, wishlist, toggleWishlist, setPage, 
         <button onClick={() => setPage("shop")} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 14, display: "flex", alignItems: "center", gap: 6, marginBottom: 32, padding: 0 }}>
           ← Zurück zum Shop
         </button>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60 }}>
+        <div className="grid-2col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60 }}>
           {/* Gallery */}
           <div>
-            <div style={{ height: 480, borderRadius: 20, overflow: "hidden", background: `radial-gradient(ellipse at center, ${product.glow} 0%, var(--bg-card) 70%)`, marginBottom: 12, position: "relative" }}>
-              <ProductVisual product={product} size={400} />
+            <div style={{ height: 480, borderRadius: 20, overflow: "hidden", background: "var(--bg-card)", border: `1px solid ${product.color1}22`, boxShadow: `0 24px 64px -32px ${product.glow}`, marginBottom: 12, position: "relative" }}>
+              <ProductVisual product={product} size={400} src={product.images[activeImg]} />
               {product.badge && (
-                <div style={{ position: "absolute", top: 16, left: 16, background: `linear-gradient(135deg, ${product.color1}, ${product.color2})`, borderRadius: 8, padding: "6px 14px", fontSize: 12, fontWeight: 700, color: "white" }}>
+                <div style={{ position: "absolute", top: 16, left: 16, background: `linear-gradient(135deg, ${product.color1}, ${product.color2})`, borderRadius: 8, padding: "6px 14px", fontSize: 12, fontWeight: 700, color: "white", zIndex: 2 }}>
                   {product.badge}
                 </div>
               )}
             </div>
-            <div style={{ display: "flex", gap: 8 }}>
-              {product.images.slice(0, 3).map((img, i) => (
-                <button key={i} onClick={() => setActiveImg(i)} aria-label={`Bild ${i + 1}`}
-                  style={{ width: 80, height: 80, borderRadius: 12, overflow: "hidden", border: `2px solid ${activeImg === i ? product.color1 : "var(--border)"}`, background: "var(--bg-card)", cursor: "pointer" }}>
-                  <div style={{ width: "100%", height: "100%", background: `radial-gradient(ellipse at center, ${product.glow}, var(--bg-deep))` }}>
-                    <ProductVisual product={product} size={80} />
-                  </div>
-                </button>
-              ))}
-            </div>
+            {product.images.length > 1 && (
+              <div className="detail-thumbs" style={{ display: "flex", gap: 8 }}>
+                {product.images.map((img, i) => (
+                  <button key={i} onClick={() => setActiveImg(i)} aria-label={`Bild ${i + 1}`}
+                    style={{ width: 80, height: 80, borderRadius: 12, overflow: "hidden", border: `2px solid ${activeImg === i ? product.color1 : "var(--border)"}`, background: "var(--bg-card)", cursor: "pointer", padding: 0 }}>
+                    <ProductVisual product={product} size={80} src={img} />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Info */}
@@ -1039,7 +1082,7 @@ const ProductDetail = ({ product, addToCart, wishlist, toggleWishlist, setPage, 
                 <button onClick={() => setQty(qty + 1)} aria-label="Menge erhöhen" style={{ width: 44, height: 50, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", color: "var(--text-secondary)" }}><Plus size={16} /></button>
               </div>
               <button onClick={() => { addToCart(product, qty); addToast(`${product.name} hinzugefügt`, "success"); }}
-                style={{ flex: 1, background: `linear-gradient(135deg, ${product.color1}, ${product.color2})`, border: "none", borderRadius: 10, color: "white", fontWeight: 700, fontSize: 16, cursor: "pointer", boxShadow: `0 0 28px ${product.glow}` }}>
+                style={{ flex: 1, background: `linear-gradient(135deg, ${product.color1}, ${product.color2})`, border: "none", borderRadius: 10, color: "white", fontWeight: 700, fontSize: 16, cursor: "pointer", boxShadow: `0 10px 30px -10px ${product.glow}` }}>
                 In den Warenkorb
               </button>
               <button onClick={() => toggleWishlist(product.id)} aria-label={inWishlist ? "Von Wunschliste entfernen" : "Zur Wunschliste hinzufügen"}
@@ -1194,7 +1237,7 @@ const CheckoutPage = ({ cartItems, setPage, clearCart }) => {
 
   return (
     <div style={{ minHeight: "100vh", paddingTop: 80 }}>
-      <div style={{ maxWidth: 960, margin: "0 auto", padding: "40px 24px", display: "grid", gridTemplateColumns: "1fr 360px", gap: 40 }}>
+      <div className="checkout-grid" style={{ maxWidth: 960, margin: "0 auto", padding: "40px 24px", display: "grid", gridTemplateColumns: "1fr 360px", gap: 40 }}>
         <div>
           {/* Steps */}
           <div style={{ display: "flex", gap: 0, marginBottom: 32 }}>
@@ -1319,13 +1362,13 @@ const AboutPage = () => (
       </div>
     </div>
     <div style={{ maxWidth: 1280, margin: "0 auto", padding: "60px 24px 100px" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, marginBottom: 80 }}>
+      <div className="grid-2col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, marginBottom: 80 }}>
         <div>
           <h2 style={{ fontSize: 28, fontWeight: 800, marginBottom: 20, letterSpacing: -0.5 }}>Aus einer Idee, die nicht loslässt.</h2>
           <p style={{ fontSize: 16, color: "var(--text-secondary)", lineHeight: 1.8, marginBottom: 16 }}>Clarity entstand aus einer einfachen Frustration: Existierende Energy Drinks fühlten sich entweder wie Zuckerwasser oder wie Chemie-Experimente an. Wir wollten beides nicht.</p>
           <p style={{ fontSize: 16, color: "var(--text-secondary)", lineHeight: 1.8 }}>Zwei Jahre Entwicklung, drei Formeln, hunderte Geschmackstests. Das Ergebnis: Energy, das funktioniert — klar, sauber, ohne Kompromisse.</p>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <div className="about-stats" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
           {[{ n: "10.000+", l: "Zufriedene Kunden" }, { n: "3", l: "Einzigartige Formeln" }, { n: "0g", l: "Zucker" }, { n: "2024", l: "Gegründet" }].map((s, i) => (
             <div key={i} style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 16, padding: 24, textAlign: "center" }}>
               <div className="font-display" style={{ fontSize: 32, fontWeight: 900, color: "var(--brand)", marginBottom: 6 }}>{s.n}</div>
