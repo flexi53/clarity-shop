@@ -86,6 +86,14 @@ const FontLoader = () => {
         .hero-cta button { width: 100%; }
         .about-stats { grid-template-columns: 1fr 1fr !important; }
       }
+      /* Shop grid: 3 per row on desktop, 2 on tablet, 1 on phone */
+      @media (max-width: 1080px) {
+        .shop-grid { grid-template-columns: repeat(2, 1fr) !important; }
+      }
+      @media (max-width: 620px) {
+        .shop-grid { grid-template-columns: 1fr !important; }
+        .pcard-h-img { width: 150px !important; }
+      }
     `;
     document.head.appendChild(style);
   }, []);
@@ -373,7 +381,7 @@ const HeroSection = ({ setPage, addToCart }) => {
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 200, background: "linear-gradient(to top, var(--bg-deep), transparent)" }} />
 
       {/* Content */}
-      <div className="hero-grid" style={{ position: "relative", maxWidth: 1280, margin: "0 auto", padding: "160px 24px 80px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40, alignItems: "center", width: "100%" }}>
+      <div className="hero-grid" style={{ position: "relative", maxWidth: 1480, margin: "0 auto", padding: "120px 48px 80px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center", width: "100%" }}>
         {/* Text */}
         <div key={activeSlide} className="animate-fadeUp hero-copy">
           <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-active)", borderRadius: 100, padding: "6px 14px", marginBottom: 24 }}>
@@ -404,7 +412,7 @@ const HeroSection = ({ setPage, addToCart }) => {
         {/* Product Visual */}
         <div className="hero-visual-wrap" style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "relative" }}>
           <div style={{ position: "absolute", width: 600, height: 600, borderRadius: "50%", background: `radial-gradient(circle, ${p.glow} 0%, transparent 70%)`, filter: "blur(60px)", animation: "pulseGlow 3s ease-in-out infinite" }} />
-          <div key={activeSlide + "-img"} className="animate-float hero-visual" style={{ width: 480, height: 560, position: "relative", borderRadius: 24, overflow: "hidden", border: `1px solid ${p.color1}22`, boxShadow: `0 24px 64px -24px ${p.glow}` }}>
+          <div key={activeSlide + "-img"} className="animate-float hero-visual" style={{ width: 560, height: 640, position: "relative", borderRadius: 28, overflow: "hidden", border: `1px solid ${p.color1}22`, boxShadow: `0 24px 64px -24px ${p.glow}` }}>
             <ProductVisual product={p} size={480} />
           </div>
         </div>
@@ -420,15 +428,15 @@ const HeroSection = ({ setPage, addToCart }) => {
 };
 
 // ─── Product Card ──────────────────────────────────────────────────────────
-const ProductCard = ({ product, onSelect, addToCart, wishlist, toggleWishlist }) => {
+const ProductCard = ({ product, onSelect, addToCart, wishlist, toggleWishlist, horizontal = false }) => {
   const [hovered, setHovered] = useState(false);
   const inWishlist = wishlist.includes(product.id);
   const perUnit = product.category === "multipack" ? formatPrice(product.price / 6) : null;
 
-  return (
-    <article onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-      style={{ background: hovered ? "var(--bg-card-hover)" : "var(--bg-card)", border: `1px solid ${hovered ? product.color1 + "44" : "var(--border)"}`, borderRadius: 16, overflow: "hidden", cursor: "pointer", transition: "all 0.3s ease", transform: hovered ? "translateY(-4px)" : "none", boxShadow: hovered ? `0 12px 40px ${product.glow}` : "none", position: "relative" }}>
+  const cardBase = { background: hovered ? "var(--bg-card-hover)" : "var(--bg-card)", border: `1px solid ${hovered ? product.color1 + "44" : "var(--border)"}`, borderRadius: 16, overflow: "hidden", cursor: "pointer", transition: "all 0.3s ease", transform: hovered ? "translateY(-4px)" : "none", boxShadow: hovered ? `0 12px 40px ${product.glow}` : "none", position: "relative" as const };
 
+  const overlays = (
+    <>
       {product.badge && (
         <div style={{ position: "absolute", top: 12, left: 12, zIndex: 2, background: `linear-gradient(135deg, ${product.color1}, ${product.color2})`, borderRadius: 6, padding: "4px 10px", fontSize: 10, fontWeight: 700, letterSpacing: 1, color: "white" }}>
           {product.badge}
@@ -443,38 +451,75 @@ const ProductCard = ({ product, onSelect, addToCart, wishlist, toggleWishlist })
         style={{ position: "absolute", top: 12, right: 12, zIndex: 2, background: "rgba(0,0,0,0.4)", border: "none", borderRadius: "50%", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: inWishlist ? product.color1 : "var(--text-muted)" }}>
         <Heart size={14} fill={inWishlist ? product.color1 : "none"} />
       </button>
+    </>
+  );
 
-      {/* Image with zoom on hover */}
+  const ratingRow = (
+    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14 }}>
+      <div style={{ display: "flex", gap: 2 }}>
+        {[...Array(5)].map((_, i) => <Star key={i} size={12} fill={i < Math.floor(product.rating) ? product.color1 : "none"} color={product.color1} />)}
+      </div>
+      <span style={{ fontSize: 12, color: "var(--text-muted)" }}>({product.reviewCount.toLocaleString()})</span>
+    </div>
+  );
+
+  const priceRow = (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div>
+        <span style={{ fontSize: 20, fontWeight: 700, color: "var(--text-primary)" }}>{formatPrice(product.price)}</span>
+        {product.comparePrice && <span style={{ fontSize: 13, color: "var(--text-muted)", textDecoration: "line-through", marginLeft: 8 }}>{formatPrice(product.comparePrice)}</span>}
+      </div>
+    </div>
+  );
+
+  const cartButton = (
+    <button onClick={(e) => { e.stopPropagation(); addToCart(product, 1); }}
+      style={{ width: "100%", background: `linear-gradient(135deg, ${product.color1}22, ${product.color2}11)`, border: `1px solid ${product.color1}55`, borderRadius: 10, padding: "10px", color: product.color1, fontWeight: 600, fontSize: 13, cursor: "pointer", transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+      <ShoppingCart size={14} /> In den Warenkorb
+    </button>
+  );
+
+  // Horizontal layout: image on the left, all info + button stacked on the right.
+  if (horizontal) {
+    return (
+      <article onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{ ...cardBase, display: "flex", flexDirection: "row" }}>
+        {overlays}
+        <div onClick={() => onSelect(product)} className="pcard-h-img" style={{ width: 200, flexShrink: 0, alignSelf: "stretch", minHeight: 240, background: `radial-gradient(ellipse at center, ${product.glow} 0%, var(--bg-deep) 70%)`, position: "relative", overflow: "hidden" }}>
+          <div style={{ transform: hovered ? "scale(1.06)" : "scale(1)", transition: "transform 0.4s ease", height: "100%" }}>
+            <ProductVisual product={product} size={180} />
+          </div>
+        </div>
+        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+          <div onClick={() => onSelect(product)} style={{ padding: "18px 18px 8px", flex: 1 }}>
+            <div style={{ fontSize: 11, color: product.color1, fontWeight: 600, letterSpacing: 1, marginBottom: 4 }}>{getFlavorLabel(product.flavor).toUpperCase()}</div>
+            <h3 style={{ fontSize: 17, fontWeight: 700, marginBottom: 6, color: "var(--text-primary)" }}>{product.name}</h3>
+            <p style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 12, lineHeight: 1.5 }}>{product.shortDesc}</p>
+            {ratingRow}
+            {priceRow}
+          </div>
+          <div style={{ padding: "0 18px 18px" }}>{cartButton}</div>
+        </div>
+      </article>
+    );
+  }
+
+  // Vertical layout (default): image on top, info below.
+  return (
+    <article onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={cardBase}>
+      {overlays}
       <div onClick={() => onSelect(product)} style={{ height: 300, background: `radial-gradient(ellipse at center, ${product.glow} 0%, var(--bg-deep) 70%)`, position: "relative", overflow: "hidden" }}>
         <div style={{ transform: hovered ? "scale(1.06)" : "scale(1)", transition: "transform 0.4s ease", height: "100%" }}>
           <ProductVisual product={product} size={180} />
         </div>
       </div>
-
-      {/* Info */}
       <div onClick={() => onSelect(product)} style={{ padding: 16 }}>
         <div style={{ fontSize: 11, color: product.color1, fontWeight: 600, letterSpacing: 1, marginBottom: 4 }}>{getFlavorLabel(product.flavor).toUpperCase()}</div>
         <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 4, color: "var(--text-primary)" }}>{product.name}</h3>
         <p style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 12, lineHeight: 1.5 }}>{product.shortDesc}</p>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14 }}>
-          <div style={{ display: "flex", gap: 2 }}>
-            {[...Array(5)].map((_, i) => <Star key={i} size={12} fill={i < Math.floor(product.rating) ? product.color1 : "none"} color={product.color1} />)}
-          </div>
-          <span style={{ fontSize: 12, color: "var(--text-muted)" }}>({product.reviewCount.toLocaleString()})</span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div>
-            <span style={{ fontSize: 20, fontWeight: 700, color: "var(--text-primary)" }}>{formatPrice(product.price)}</span>
-            {product.comparePrice && <span style={{ fontSize: 13, color: "var(--text-muted)", textDecoration: "line-through", marginLeft: 8 }}>{formatPrice(product.comparePrice)}</span>}
-          </div>
-        </div>
+        {ratingRow}
+        {priceRow}
       </div>
-      <div style={{ padding: "0 16px 16px" }}>
-        <button onClick={(e) => { e.stopPropagation(); addToCart(product, 1); }}
-          style={{ width: "100%", background: `linear-gradient(135deg, ${product.color1}22, ${product.color2}11)`, border: `1px solid ${product.color1}55`, borderRadius: 10, padding: "10px", color: product.color1, fontWeight: 600, fontSize: 13, cursor: "pointer", transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-          <ShoppingCart size={14} /> In den Warenkorb
-        </button>
-      </div>
+      <div style={{ padding: "0 16px 16px" }}>{cartButton}</div>
     </article>
   );
 };
@@ -1230,9 +1275,9 @@ const ShopPage = ({ addToCart, wishlist, toggleWishlist, onSelect, initialFilter
             <p>Keine Produkte gefunden.</p>
           </div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 20 }}>
+          <div className="shop-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
             {filtered.map(p => (
-              <ProductCard key={p.id} product={p} onSelect={onSelect} addToCart={addToCart} wishlist={wishlist} toggleWishlist={toggleWishlist} />
+              <ProductCard key={p.id} product={p} horizontal onSelect={onSelect} addToCart={addToCart} wishlist={wishlist} toggleWishlist={toggleWishlist} />
             ))}
           </div>
         )}
