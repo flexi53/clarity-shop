@@ -56,28 +56,55 @@ export async function POST(request: Request) {
   }
 
   const apiKey = process.env.RESEND_API_KEY;
-  // "onboarding@resend.dev" funktioniert ohne verifizierte Domain (nur zum Testen an die eigene Adresse).
-  const from = process.env.NEWSLETTER_FROM || "Clarity <onboarding@resend.dev>";
+  // NEWSLETTER_FROM wird erst gesetzt, wenn eine EIGENE, in Resend verifizierte Domain existiert.
+  // Fehlt sie, ist Resend im Testmodus und kann nur an die eigene Konto-Adresse liefern.
+  const customFrom = process.env.NEWSLETTER_FROM;
+  const from = customFrom || "Clarity <onboarding@resend.dev>";
+  const notify = process.env.NEWSLETTER_NOTIFY;
 
-  // Noch kein Mailversand eingerichtet: Anmeldung annehmen, aber signalisieren, dass keine Mail rausging.
+  // Kein Key hinterlegt: Anmeldung annehmen, aber signalisieren, dass keine Mail rausging.
   if (!apiKey) {
-    console.warn("[newsletter] RESEND_API_KEY fehlt — es wurde keine Bestätigungs-Mail versendet.");
+    console.warn("[newsletter] RESEND_API_KEY fehlt — es wurde keine Mail versendet.");
     return NextResponse.json({ ok: true, emailSent: false });
   }
 
-  try {
-    const res = await fetch(RESEND_ENDPOINT, {
+  const send = (payload: Record<string, unknown>) =>
+    fetch(RESEND_ENDPOINT, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+  // Betreiber:in über jede Anmeldung informieren. Funktioniert auch OHNE eigene Domain,
+  // solange NEWSLETTER_NOTIFY die eigene Resend-Konto-Adresse ist. So werden die
+  // Abonnenten gesammelt. Fehler hier dürfen die Anmeldung nicht scheitern lassen.
+  if (notify) {
+    try {
+      const r = await send({
         from,
-        to: [email],
-        subject: "Willkommen bei Clarity ⚡",
-        html: confirmationHtml(),
-      }),
+        to: [notify],
+        subject: "Neue Newsletter-Anmeldung",
+        html: `<p>Neue Newsletter-Anmeldung: <strong>${email}</strong></p>`,
+      });
+      if (!r.ok) console.error("[newsletter] Betreiber-Benachrichtigung fehlgeschlagen:", r.status, await r.text().catch(() => ""));
+    } catch (e) {
+      console.error("[newsletter] Betreiber-Benachrichtigung fehlgeschlagen:", e);
+    }
+  }
+
+  // Ohne verifizierte Domain kann Resend keine Bestätigung an fremde Adressen senden.
+  // Anmeldung still akzeptieren (kein Fehler für echte Besucher:innen).
+  if (!customFrom) {
+    return NextResponse.json({ ok: true, emailSent: false });
+  }
+
+  // Domain-Modus: Bestätigungsmail direkt an den/die Abonnent:in senden.
+  try {
+    const res = await send({
+      from,
+      to: [email],
+      subject: "Willkommen bei Clarity ⚡",
+      html: confirmationHtml(),
     });
 
     if (!res.ok) {
@@ -87,21 +114,6 @@ export async function POST(request: Request) {
         { ok: false, error: "E-Mail konnte nicht gesendet werden. Bitte später erneut versuchen." },
         { status: 502 },
       );
-    }
-
-    // Optional: Betreiber:in über die neue Anmeldung informieren (NEWSLETTER_NOTIFY = Empfängeradresse).
-    const notify = process.env.NEWSLETTER_NOTIFY;
-    if (notify) {
-      fetch(RESEND_ENDPOINT, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          from,
-          to: [notify],
-          subject: "Neue Newsletter-Anmeldung",
-          html: `<p>Neue Anmeldung: <strong>${email}</strong></p>`,
-        }),
-      }).catch((e) => console.error("[newsletter] Betreiber-Benachrichtigung fehlgeschlagen:", e));
     }
 
     return NextResponse.json({ ok: true, emailSent: true });
