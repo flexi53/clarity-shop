@@ -271,7 +271,7 @@ const Header = ({ page, setPage, cartItems, cartOpen, setCartOpen, wishlist }) =
   return (
     <header style={{ position: "fixed", top: 36, left: 0, right: 0, zIndex: 1000, transition: "all 0.4s ease", padding: "12px 24px" }}>
       <div className="header-bar" style={{
-        maxWidth: 1280, margin: "0 auto", height: 72, display: "flex", alignItems: "center", justifyContent: "center",
+        maxWidth: 1680, margin: "0 auto", height: 72, display: "flex", alignItems: "center", justifyContent: "center",
         background: "rgba(255,255,255,0.05)",
         backdropFilter: "blur(24px) saturate(180%)",
         WebkitBackdropFilter: "blur(24px) saturate(180%)",
@@ -341,7 +341,7 @@ const Header = ({ page, setPage, cartItems, cartOpen, setCartOpen, wishlist }) =
 
       {/* Mobile menu panel */}
       {mobileOpen && (
-        <div className="animate-fadeUp" style={{ maxWidth: 1280, margin: "8px auto 0", background: "rgba(13,15,28,0.92)", backdropFilter: "blur(24px) saturate(180%)", WebkitBackdropFilter: "blur(24px) saturate(180%)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 18, padding: 8, boxShadow: "0 16px 48px rgba(0,0,0,0.5)" }}>
+        <div className="animate-fadeUp" style={{ maxWidth: 1680, margin: "8px auto 0", background: "rgba(13,15,28,0.92)", backdropFilter: "blur(24px) saturate(180%)", WebkitBackdropFilter: "blur(24px) saturate(180%)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 18, padding: 8, boxShadow: "0 16px 48px rgba(0,0,0,0.5)" }}>
           {navLinks.map(l => (
             <button key={l.key} onClick={() => { setPage(l.key); setMobileOpen(false); }}
               style={{ display: "block", width: "100%", textAlign: "left", background: page === l.key ? "rgba(255,255,255,0.08)" : "none", border: "none", cursor: "pointer", padding: "14px 16px", borderRadius: 12, fontSize: 15, fontWeight: 500, color: page === l.key ? "var(--text-primary)" : "var(--text-secondary)" }}>
@@ -381,7 +381,7 @@ const HeroSection = ({ setPage, addToCart }) => {
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 200, background: "linear-gradient(to top, var(--bg-deep), transparent)" }} />
 
       {/* Content */}
-      <div className="hero-grid" style={{ position: "relative", maxWidth: 1700, margin: "0 auto", padding: "120px 56px 80px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48, alignItems: "center", width: "100%" }}>
+      <div className="hero-grid" style={{ position: "relative", maxWidth: 1680, margin: "0 auto", padding: "120px 24px 80px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48, alignItems: "center", width: "100%" }}>
         {/* Text */}
         <div key={activeSlide} className="animate-fadeUp hero-copy">
           <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-active)", borderRadius: 100, padding: "6px 14px", marginBottom: 24 }}>
@@ -527,7 +527,7 @@ const ProductCard = ({ product, onSelect, addToCart, wishlist, toggleWishlist, h
 // ─── Featured Products ─────────────────────────────────────────────────────
 const FeaturedSection = ({ setPage, addToCart, wishlist, toggleWishlist, onSelect }) => (
   <section style={{ padding: "100px 24px", background: "var(--bg-base)" }}>
-    <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+    <div style={{ maxWidth: 1680, margin: "0 auto" }}>
       <div className="animate-fadeUp" style={{ textAlign: "center", marginBottom: 56 }}>
         <div style={{ fontSize: 12, letterSpacing: 3, color: "var(--brand)", fontWeight: 600, marginBottom: 12 }}>SORTIMENT</div>
         <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, letterSpacing: -1, marginBottom: 16 }}>Drei Welten. Ein Ziel.</h2>
@@ -571,7 +571,7 @@ const PromoBanner = ({ setPage }) => {
       {/* Dark overlay for readability */}
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to left, rgba(4,5,13,0.92) 0%, rgba(4,5,13,0.7) 50%, rgba(4,5,13,0.2) 100%)" }} />
       {/* Text — right side */}
-      <div className="promo-inner" style={{ position: "relative", maxWidth: 1280, margin: "0 auto", padding: "80px 48px", display: "flex", justifyContent: "flex-end" }}>
+      <div className="promo-inner" style={{ position: "relative", maxWidth: 1680, margin: "0 auto", padding: "80px 48px", display: "flex", justifyContent: "flex-end" }}>
         <div style={{ maxWidth: 460 }}>
           <div style={{ display: "inline-block", background: "rgba(255,85,0,0.2)", border: "1px solid rgba(255,85,0,0.5)", borderRadius: 6, padding: "4px 12px", fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "#ff5500", marginBottom: 20 }}>LIMITIERTES ANGEBOT</div>
           <h2 style={{ fontSize: "clamp(32px, 4vw, 58px)", fontWeight: 800, letterSpacing: -1, marginBottom: 14, lineHeight: 1.05 }}>Nimm 3.<br /><span style={{ color: "#ff9d00" }}>Zahle 2.</span></h2>
@@ -603,7 +603,7 @@ const FlavorWorlds = ({ setPage, onSelect }) => {
   ];
   return (
     <section style={{ padding: "100px 24px" }}>
-      <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+      <div style={{ maxWidth: 1680, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 56 }}>
           <div style={{ fontSize: 12, letterSpacing: 3, color: "var(--brand)", fontWeight: 600, marginBottom: 12 }}>SORTENWELTEN</div>
           <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, letterSpacing: -1 }}>Dein Zustand. Deine Wahl.</h2>
@@ -644,7 +644,7 @@ const USPBar = () => {
   ];
   return (
     <section style={{ background: "var(--bg-card)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "40px 24px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 24 }}>
+      <div style={{ maxWidth: 1680, margin: "0 auto", padding: "40px 24px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 24 }}>
         {usps.map((u, i) => (
           <div key={i} style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(123,92,255,0.15)", border: "1px solid rgba(123,92,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--brand)", flexShrink: 0 }}>
@@ -664,7 +664,7 @@ const USPBar = () => {
 // ─── Bundle Section ────────────────────────────────────────────────────────
 const BundleSection = ({ addToCart, onSelect }) => (
   <section style={{ padding: "100px 24px", background: "var(--bg-base)" }}>
-    <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+    <div style={{ maxWidth: 1680, margin: "0 auto" }}>
       <div style={{ textAlign: "center", marginBottom: 56 }}>
         <div style={{ fontSize: 12, letterSpacing: 3, color: "var(--brand)", fontWeight: 600, marginBottom: 12 }}>BUNDLES</div>
         <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, letterSpacing: -1 }}>Mehr Clarity. Besserer Preis.</h2>
@@ -723,7 +723,7 @@ const ReviewsSection = () => {
   const featured = REVIEWS[2];
   return (
     <section style={{ padding: "100px 24px", background: "var(--bg-base)" }}>
-      <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+      <div style={{ maxWidth: 1680, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 48 }}>
           <div style={{ fontSize: 12, letterSpacing: 3, color: "var(--brand)", fontWeight: 600, marginBottom: 12 }}>COMMUNITY</div>
           <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, letterSpacing: -1 }}>Was Clarity-Nutzer sagen.</h2>
@@ -783,7 +783,7 @@ const CommunityGallery = ({ onSelect }) => {
   ];
   return (
     <section style={{ padding: "80px 24px" }}>
-      <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+      <div style={{ maxWidth: 1680, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 40 }}>
           <div style={{ fontSize: 12, letterSpacing: 3, color: "var(--brand)", fontWeight: 600, marginBottom: 12 }}>COMMUNITY</div>
           <h2 style={{ fontSize: "clamp(24px, 3vw, 40px)", fontWeight: 800, letterSpacing: -1 }}>Clarity in freier Wildbahn.</h2>
@@ -810,7 +810,7 @@ const RecentlyViewed = ({ products, onSelect, addToCart, wishlist, toggleWishlis
   if (products.length === 0) return null;
   return (
     <section style={{ padding: "60px 24px", background: "var(--bg-base)" }}>
-      <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+      <div style={{ maxWidth: 1680, margin: "0 auto" }}>
         <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 24, letterSpacing: -0.5 }}>Zuletzt angesehen</h3>
         <div style={{ display: "flex", gap: 16, overflowX: "auto", paddingBottom: 8 }}>
           {products.map(p => (
@@ -830,7 +830,7 @@ const StorySection = ({ setPage }) => {
   return (
     <section style={{ padding: "100px 24px", position: "relative", overflow: "hidden" }}>
       <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 60% at 0% 50%, rgba(123,92,255,0.08), transparent)" }} />
-      <div className="grid-2col" style={{ maxWidth: 1280, margin: "0 auto", position: "relative", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "center" }}>
+      <div className="grid-2col" style={{ maxWidth: 1680, margin: "0 auto", position: "relative", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "center" }}>
         <div>
           <div style={{ fontSize: 12, letterSpacing: 3, color: "var(--brand)", fontWeight: 600, marginBottom: 16 }}>UNSERE STORY</div>
           <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, letterSpacing: -1, lineHeight: 1.1, marginBottom: 24 }}>Gebaut für den,<br />der mehr will.</h2>
@@ -932,7 +932,7 @@ const Footer = ({ setPage }) => {
   };
   return (
     <footer style={{ background: "var(--bg-deep)", borderTop: "1px solid var(--border)", padding: "60px 24px 32px" }}>
-      <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+      <div style={{ maxWidth: 1680, margin: "0 auto" }}>
         <div className="footer-grid" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr", gap: 40, marginBottom: 48 }}>
           <div className="footer-brand">
             {!logoErr ? (
@@ -1099,7 +1099,7 @@ const ProductDetail = ({ product, addToCart, wishlist, toggleWishlist, setPage, 
 
   return (
     <div style={{ minHeight: "100vh", paddingTop: 80 }}>
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "40px 24px" }}>
+      <div style={{ maxWidth: 1680, margin: "0 auto", padding: "40px 24px" }}>
         <button onClick={() => setPage("shop")} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 14, display: "flex", alignItems: "center", gap: 6, marginBottom: 32, padding: 0 }}>
           ← Zurück zum Shop
         </button>
@@ -1237,12 +1237,12 @@ const ShopPage = ({ addToCart, wishlist, toggleWishlist, onSelect, initialFilter
   return (
     <div style={{ minHeight: "100vh", paddingTop: 80 }}>
       <div style={{ background: "var(--bg-card)", borderBottom: "1px solid var(--border)", padding: "48px 24px 32px" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+        <div style={{ maxWidth: 1680, margin: "0 auto" }}>
           <h1 style={{ fontSize: 40, fontWeight: 800, letterSpacing: -1, marginBottom: 8 }}>Shop</h1>
           <p style={{ color: "var(--text-secondary)", fontSize: 16 }}>Alle Produkte. Alle Welten. Deine Wahl.</p>
         </div>
       </div>
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "32px 24px" }}>
+      <div style={{ maxWidth: 1680, margin: "0 auto", padding: "32px 24px" }}>
         {/* Filter bar */}
         <div style={{ display: "flex", gap: 12, marginBottom: 32, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -1434,12 +1434,12 @@ const AboutPage = () => (
     <div style={{ position: "relative", height: 400, display: "flex", alignItems: "center", overflow: "hidden" }}>
       <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 30% 50%, rgba(123,92,255,0.2), transparent 60%)" }} />
       <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 80% 60%, rgba(0,212,255,0.1), transparent 50%)" }} />
-      <div style={{ position: "relative", maxWidth: 1280, margin: "0 auto", padding: "0 24px" }}>
+      <div style={{ position: "relative", maxWidth: 1680, margin: "0 auto", padding: "0 24px" }}>
         <div style={{ fontSize: 12, letterSpacing: 3, color: "var(--brand)", fontWeight: 600, marginBottom: 16 }}>ÜBER UNS</div>
         <h1 style={{ fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 800, letterSpacing: -2, lineHeight: 1.05 }}>Wir sind Clarity.</h1>
       </div>
     </div>
-    <div style={{ maxWidth: 1280, margin: "0 auto", padding: "60px 24px 100px" }}>
+    <div style={{ maxWidth: 1680, margin: "0 auto", padding: "60px 24px 100px" }}>
       <div className="grid-2col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, marginBottom: 80 }}>
         <div>
           <h2 style={{ fontSize: 28, fontWeight: 800, marginBottom: 20, letterSpacing: -0.5 }}>Aus einer Idee, die nicht loslässt.</h2>
