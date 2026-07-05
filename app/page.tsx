@@ -381,7 +381,7 @@ const HeroSection = ({ setPage, addToCart }) => {
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 200, background: "linear-gradient(to top, var(--bg-deep), transparent)" }} />
 
       {/* Content */}
-      <div className="hero-grid" style={{ position: "relative", maxWidth: 1480, margin: "0 auto", padding: "120px 48px 80px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center", width: "100%" }}>
+      <div className="hero-grid" style={{ position: "relative", maxWidth: 1700, margin: "0 auto", padding: "120px 56px 80px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48, alignItems: "center", width: "100%" }}>
         {/* Text */}
         <div key={activeSlide} className="animate-fadeUp hero-copy">
           <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-active)", borderRadius: 100, padding: "6px 14px", marginBottom: 24 }}>
@@ -412,7 +412,7 @@ const HeroSection = ({ setPage, addToCart }) => {
         {/* Product Visual */}
         <div className="hero-visual-wrap" style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "relative" }}>
           <div style={{ position: "absolute", width: 600, height: 600, borderRadius: "50%", background: `radial-gradient(circle, ${p.glow} 0%, transparent 70%)`, filter: "blur(60px)", animation: "pulseGlow 3s ease-in-out infinite" }} />
-          <div key={activeSlide + "-img"} className="animate-float hero-visual" style={{ width: 560, height: 640, position: "relative", borderRadius: 28, overflow: "hidden", border: `1px solid ${p.color1}22`, boxShadow: `0 24px 64px -24px ${p.glow}` }}>
+          <div key={activeSlide + "-img"} className="animate-float hero-visual" style={{ width: 620, height: 700, position: "relative", borderRadius: 28, overflow: "hidden", border: `1px solid ${p.color1}22`, boxShadow: `0 24px 64px -24px ${p.glow}` }}>
             <ProductVisual product={p} size={480} />
           </div>
         </div>
